@@ -16,13 +16,15 @@ public class BenDiUserInFo {
     private String name;
     private int xingbie;
     private String beizhu;
-    @Generated(hash = 355698400)
-    public BenDiUserInFo(@NotNull Long id, String name, int xingbie,
-            String beizhu) {
+    private String shenFen;
+    @Generated(hash = 1618236778)
+    public BenDiUserInFo(@NotNull Long id, String name, int xingbie, String beizhu,
+            String shenFen) {
         this.id = id;
         this.name = name;
         this.xingbie = xingbie;
         this.beizhu = beizhu;
+        this.shenFen = shenFen;
     }
     @Generated(hash = 2095391012)
     public BenDiUserInFo() {
@@ -51,6 +53,13 @@ public class BenDiUserInFo {
     public void setBeizhu(String beizhu) {
         this.beizhu = beizhu;
     }
+    public String getShenFen() {
+        return this.shenFen;
+    }
+    public void setShenFen(String shenFen) {
+        this.shenFen = shenFen;
+    }
+
     
 
 

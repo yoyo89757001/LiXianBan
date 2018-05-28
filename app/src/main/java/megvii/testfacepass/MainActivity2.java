@@ -158,6 +158,7 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
     private static boolean isRuku=false;
     private static final Object lock = new Object();
     private static String usbPath=null;
+    private int si=0;
 
     /* SDK 实例对象 */
     FacePassHandler mFacePassHandler;
@@ -341,7 +342,7 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
 //                        int retryCount = 2;
                         float searchThreshold = 75f;
                         float livenessThreshold = 70f;
-                        boolean livenessEnabled = true;
+                        boolean livenessEnabled = false;
                         int faceMinThreshold = 50;
                         FacePassPose poseThreshold = new FacePassPose(30f, 30f, 30f);
                         float blurThreshold = 0.2f;
@@ -372,6 +373,7 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                         try {
                             if (mFacePassHandler!=null) {
                                 boolean isSuccess = mFacePassHandler.createLocalGroup(group_name);
+
                                 Log.d("ffffffff", "循环完了？创建组状态:" + isSuccess);
                             }
                         } catch (FacePassException e) {
@@ -561,11 +563,13 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
                                 String faceToken = new String(result.faceToken);
+                                Log.d("RecognizeThread", "result.facePassRecognitionResultType:" + result.facePassRecognitionResultType);
                                 if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {
+                                    //
                                     getFaceImageByFaceToken(result.trackId, faceToken);
                                 }
                                 showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken));
-                                Log.d("ffffff", "识别成功");
+
                             }
                         }
                     }
@@ -712,26 +716,25 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                             toast("请插拔一下USB");
                             return;
                         }
+                        Log.d("MainActivity2", "ddd");
+
                         isRuku=true;
 
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
 
-
-                                try {
-
-
-                                    //    Bitmap bitmap = BitmapFactory.decodeFile(usbPath.split("file:///")[1] + File.separator + "dgx.png");
-
                                     try {
+
                                         List<String> strings=new ArrayList<>();
-                                        final StringBuffer stringBuffer=new StringBuffer();
+                                        final StringBuilder stringBuffer=new StringBuilder();
 
                                         final List<String> jsonArray= FileUtil.getAllFiles(usbPath+ File.separator + "入库照片",strings);
+
                                         if (jsonArray!=null){
                                             final int size= jsonArray.size();
                                             Log.d("ffffff", "size:" + size);
+
                                             for (int i=0;i<size;i++){
                                                  final String pSte=jsonArray.get(i);
 
@@ -745,22 +748,31 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
 
                                                                    Bitmap bitmap = BitmapFactory.decodeFile(pSte);
                                                                    if (bitmap!=null) {
+                                                                       FacePassAddFaceResult result=null;
+                                                                    try {
+                                                                         result = mFacePassHandler.addFace(bitmap);
 
-                                                                       FacePassAddFaceResult result = mFacePassHandler.addFace(bitmap);
+                                                                    }catch (Exception e){
+                                                                        synchronized (lock) {
+                                                                            lock.notify();
+                                                                        }
+                                                                        return;
+                                                                    }
 
                                                                        if (result != null) {
                                                                            runOnUiThread(new Runnable() {
                                                                                @Override
                                                                                public void run() {
-
+                                                                                    if (dialog!=null)
                                                                                    dialog.setProgressBar(((finalI / (float) size) * 100));
+
                                                                                }
                                                                            });
 
                                                                            if (result.result != 0) {
                                                                                //失败的记录起来
                                                                                stringBuffer.append(jsonArray.get(finalI)).append("\n");
-
+                                                                               si++;
                                                                            } else {
 
                                                                                boolean b = mFacePassHandler.bindGroup(group_name, result.faceToken);
@@ -776,11 +788,14 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
 
                                                                } catch (FacePassException e) {
                                                                    e.printStackTrace();
-                                                                   toast(e.getMessage());
+
+                                                                   synchronized (lock) {
+                                                                       lock.notify();
+                                                                   }
                                                                }
                                                            }
                                                        }).start();
-                                                    Log.d("ffffff", "222222:" );
+
                                                     lock.wait();
 
                                                 }
@@ -790,7 +805,8 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                                                 runOnUiThread(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        dialog.setTiShi("以下数据导入失败:\n"+stringBuffer.toString());
+                                                        dialog.setTiShi("以下数据导入失败:\n共"+si+"条"+stringBuffer.toString());
+                                                        si=0;
                                                     }
                                                 });
 
@@ -813,8 +829,6 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                                             dialog.setTiShi("    读取数据失败");
                                         }
 
-
-
 //                                File file = new File(FileUtil.createTmpDir(YiDongNianHuiActivity.this) + "dgx.jpg");
 //                                FileOutputStream out = new FileOutputStream(file);
 //                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
@@ -822,12 +836,9 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
 //                                out.close();
 
                                     } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                                        Log.d("ffffff", e.getMessage() + "");
 
-                                } catch (Exception e) {
-                                    Log.d("ffffff", e.getMessage() + "");
-                                }
+                                    }
 
                             }
                         }).start();
@@ -926,8 +937,6 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
             }
         });
 
-
-
     }
 
 
@@ -938,6 +947,10 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
         mDetectResultQueue.clear();
         if (manager != null) {
             manager.release();
+        }
+        if (dialog!=null){
+            dialog.dismiss();
+            dialog=null;
         }
         super.onStop();
     }

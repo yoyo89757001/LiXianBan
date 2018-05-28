@@ -26,6 +26,7 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
         public final static Property Name = new Property(1, String.class, "name", false, "NAME");
         public final static Property Xingbie = new Property(2, int.class, "xingbie", false, "XINGBIE");
         public final static Property Beizhu = new Property(3, String.class, "beizhu", false, "BEIZHU");
+        public final static Property ShenFen = new Property(4, String.class, "shenFen", false, "SHEN_FEN");
     }
 
 
@@ -44,7 +45,8 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
                 "\"_id\" INTEGER PRIMARY KEY NOT NULL ," + // 0: id
                 "\"NAME\" TEXT," + // 1: name
                 "\"XINGBIE\" INTEGER NOT NULL ," + // 2: xingbie
-                "\"BEIZHU\" TEXT);"); // 3: beizhu
+                "\"BEIZHU\" TEXT," + // 3: beizhu
+                "\"SHEN_FEN\" TEXT);"); // 4: shenFen
     }
 
     /** Drops the underlying database table. */
@@ -68,6 +70,11 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
         if (beizhu != null) {
             stmt.bindString(4, beizhu);
         }
+ 
+        String shenFen = entity.getShenFen();
+        if (shenFen != null) {
+            stmt.bindString(5, shenFen);
+        }
     }
 
     @Override
@@ -85,6 +92,11 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
         if (beizhu != null) {
             stmt.bindString(4, beizhu);
         }
+ 
+        String shenFen = entity.getShenFen();
+        if (shenFen != null) {
+            stmt.bindString(5, shenFen);
+        }
     }
 
     @Override
@@ -98,7 +110,8 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
             cursor.getLong(offset + 0), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // name
             cursor.getInt(offset + 2), // xingbie
-            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3) // beizhu
+            cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // beizhu
+            cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4) // shenFen
         );
         return entity;
     }
@@ -109,6 +122,7 @@ public class BenDiUserInFoDao extends AbstractDao<BenDiUserInFo, Long> {
         entity.setName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setXingbie(cursor.getInt(offset + 2));
         entity.setBeizhu(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
+        entity.setShenFen(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
      }
     
     @Override
