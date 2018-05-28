@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@drawable/zidonghuoqu10"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="420dp"
+        android:layout_height="300dp">
+
+
+
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_centerInParent="true"
+            android:layout_height="40dp"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:id="@+id/progressBar" />
+
+        <TextView
+            android:textSize="20sp"
+            android:text="入库中...0%"
+            android:id="@+id/a1"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/progressBar"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tishi"
+            android:visibility="gone"
+            android:singleLine="false"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="match_parent"
+            android:layout_margin="20dp"
+            android:scrollbars="vertical"
+            android:layout_height="200dp" />
+
+    </RelativeLayout>
+
+</LinearLayout>
