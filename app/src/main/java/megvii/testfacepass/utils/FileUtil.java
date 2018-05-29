@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,20 @@ public class FileUtil {
         return pathList;
     }
 
+    //  往SD卡写入文件的方法
+    public static void savaFileToSD(String filename, String filecontent) throws Exception {
+        //如果手机已插入sd卡,且app具有读写sd卡的权限
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            filename = Environment.getExternalStorageDirectory().getCanonicalPath() + "/" + filename;
 
+            //这里就不要用openFileOutput了,那个是往手机内存中写数据的
+            FileOutputStream output = new FileOutputStream(filename,true);
+            output.write(filecontent.getBytes());
+            //将String字符串以字节流的形式写入到输出流中
+            output.close();
+            //关闭输出流
+        }
+    }
 
     /**
      * 获取指定目录内所有文件路径

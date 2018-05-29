@@ -1,7 +1,6 @@
 package megvii.testfacepass.utils;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.Color;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Gravity;
 import android.view.LayoutInflater;

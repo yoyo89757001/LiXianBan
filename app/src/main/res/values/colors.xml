@@ -3,4 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorBar_bg">#0d2cf9</color>
+    <color name="colorBar_bg2">#566af2</color>
+    <color name="tabtextcolo">#b7868686</color>
+    <color name="write">#ffffffff</color>
+    <color name="blake">#ff111111</color>
+    <color name="textcolor">#8c050505</color>
+    <color name="jinhuang">#ffe725</color>
 </resources>

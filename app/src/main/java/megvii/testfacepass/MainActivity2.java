@@ -716,7 +716,6 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                             toast("请插拔一下USB");
                             return;
                         }
-                        Log.d("MainActivity2", "ddd");
 
                         isRuku=true;
 
@@ -805,7 +804,14 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
                                                 runOnUiThread(new Runnable() {
                                                     @Override
                                                     public void run() {
-                                                        dialog.setTiShi("以下数据导入失败:\n共"+si+"条"+stringBuffer.toString());
+                                                        String ss=stringBuffer.toString();
+                                                        dialog.setTiShi("以下数据导入失败:\n共"+si+"条,已保存到本地根目录\n"+ss);
+                                                        try {
+                                                            FileUtil.savaFileToSD("失败记录"+System.currentTimeMillis(),ss);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+
                                                         si=0;
                                                     }
                                                 });
