@@ -321,7 +321,7 @@ public class MainActivity2 extends Activity implements CameraManager.CameraListe
             public void run() {
                 while (true && !isFinishing()) {
                     if (FacePassHandler.isAvailable()) {
-                        Log.d(DEBUG_TAG, "start to build FacePassHandler");
+//                        Log.d(DEBUG_TAG, "start to build FacePassHandler");
                          /* FacePass SDK 所需模型， 模型在assets目录下 */
                         trackModel = FacePassModel.initModel(getApplicationContext().getAssets(), "tracker.DT1.4.1.dingding.20180315.megface2.9.bin");
                         poseModel = FacePassModel.initModel(getApplicationContext().getAssets(), "pose.alfa.tiny.170515.bin");

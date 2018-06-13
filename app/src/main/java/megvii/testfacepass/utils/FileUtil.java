@@ -3,6 +3,7 @@ package megvii.testfacepass.utils;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -10,6 +11,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,6 +37,38 @@ public class FileUtil {
         return file.listFiles();
     }
 
+    // 创建一个临时目录，用于复制临时文件，如assets目录下的离线资源文件
+    public static String createTmpDir(Context context) {
+        String sampleDir = "dgxxxx";
+        String tmpDir = Environment.getExternalStorageDirectory().toString() + "/" + sampleDir;
+        if (!makeDir(tmpDir)) {
+            tmpDir = context.getExternalFilesDir(sampleDir).getAbsolutePath();
+            if (!makeDir(sampleDir)) {
+                throw new RuntimeException("create model resources dir failed :" + tmpDir);
+            }
+        }
+        return tmpDir;
+    }
+
+    public static boolean makeDir(String dirPath) {
+        File file = new File(dirPath);
+        if (!file.exists()) {
+            return file.mkdirs();
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Returns the screen/display size
+     */
+    public static Point getDisplaySize(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size;
+    }
     /**
      * 获取所有存储卡挂载路径
      * @return

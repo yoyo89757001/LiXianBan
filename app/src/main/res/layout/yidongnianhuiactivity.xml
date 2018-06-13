@@ -1,0 +1,256 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/video_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ff000000"
+        android:gravity="center">
+
+
+        <megvii.testfacepass.camera.CameraPreview
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical" />
+
+        <!--<megvii.testfacepass.FaceView-->
+            <!--android:id="@+id/fcview"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <Button
+            android:id="@+id/settingid"
+            android:layout_width="300dp"
+            android:layout_height="60dp"
+            android:background="#00000000" />
+
+
+        <ImageView
+            android:id="@+id/imview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/btn_face_operation"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|bottom"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:drawable/ic_menu_manage"
+                android:clickable="true" />
+
+            <ImageView
+                android:id="@+id/btn_group_name"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|bottom"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:background="@android:drawable/ic_menu_add"
+                android:clickable="true" />
+
+            <Button
+                android:id="@+id/visible"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="right|bottom"
+                android:layout_marginBottom="15dp"
+                android:layout_marginRight="5dp" />
+
+            <LinearLayout
+                android:id="@+id/ll"
+                android:layout_width="match_parent"
+                android:layout_height="314px"
+                android:layout_gravity="bottom"
+                android:background="#000000"
+                android:orientation="vertical"
+                android:paddingBottom="0dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:visibility="visible">
+
+                <ScrollView
+                    android:id="@+id/scrollView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:stackFromBottom="true"
+                    android:transcriptMode="alwaysScroll">
+
+                    <!--<TextView-->
+                    <!--android:id="@+id/tv_meg"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textColor="@android:color/white"-->
+                    <!--android:textSize="20sp" />-->
+                    <TextView
+                        android:id="@+id/tv_meg2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+                    <!--<android.support.v7.widget.RecyclerView-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:id="@+id/recycler_view"-->
+                    <!--/>-->
+                </ScrollView>
+            </LinearLayout>
+
+            <Button
+                android:layout_gravity="right"
+                android:id="@+id/btn_mode_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SDKMode" />
+
+            <TextView
+                android:id="@+id/txt_facepass_sdk_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="从usb批量入库"
+                android:textColor="@android:color/white"
+                android:textSize="30sp" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:id="@+id/dabg"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        />
+
+
+    <LinearLayout
+        android:id="@+id/giff"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textSize="90sp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/white"
+            android:id="@+id/riqi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical|right"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/shi"
+                android:textSize="90sp"
+                android:textStyle="bold"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/dian"
+                android:textSize="90sp"
+                android:textStyle="bold"
+                android:text=":"
+                android:layout_marginRight="10dp"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/jian"
+                android:textSize="90sp"
+                android:textStyle="bold"
+                android:layout_marginRight="@dimen/sp_16"
+                android:textColor="@color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <TextView
+            android:textSize="30sp"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/xingqi"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+    <!--弹窗-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="220dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <!--弹窗-->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView2"
+        android:visibility="visible"
+        android:layout_marginTop="-200dp"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_below="@+id/recyclerView"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+
+    <ImageView
+        android:id="@+id/bao"
+        android:gravity="center"
+        android:background="#fbff00"
+        android:layout_centerInParent="true"
+        android:layout_width="1dp"
+        android:layout_height="1dp">
+
+    </ImageView>
+
+    <Button
+        android:layout_width="70dp"
+        android:id="@+id/dddk"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/img_full_opaque"
+        android:layout_height="70dp" />
+
+    <TextView
+        android:background="@drawable/zidonghuoqu8"
+        android:layout_width="wrap_content"
+        android:textSize="18sp"
+        android:id="@+id/wangluo"
+        android:visibility="gone"
+        android:text="网络已断开连接,请检查网络"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:padding="12dp"
+        android:layout_height="wrap_content" />
+
+
+</RelativeLayout>

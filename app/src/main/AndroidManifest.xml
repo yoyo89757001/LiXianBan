@@ -15,8 +15,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".MyApplication"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashActivity"
+        <activity android:name=".ui.YiDongNianHuiActivity"
             android:label="facepass">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,7 @@
             />
         <activity android:name=".MainActivity2"/>
 
-        <receiver android:name=".MainActivity2$UsbBroadCastReceiver">
+        <receiver android:name=".ui.YiDongNianHuiActivity$UsbBroadCastReceiver">
                 <intent-filter android:priority="1000" >
                     <action android:name="android.intent.action.MEDIA_MOUNTED"/>
                    <action android:name="android.intent.action.MEDIA_EJECT" />

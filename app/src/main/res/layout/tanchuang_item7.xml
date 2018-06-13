@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/img_full_opaque"
+    android:layout_width="wrap_content"
+    android:id="@+id/ffflll"
+    android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/touxiang"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_marginTop="4dp"
+            android:scaleType="fitXY"
+            android:layout_height="match_parent" />
+
+<TextView
+    android:id="@+id/test"
+    android:textSize="24sp"
+    android:text="学号"
+    android:visibility="gone"
+    android:gravity="center"
+   android:layout_below="@+id/touxiang"
+    android:textColor="@color/write"
+    android:layout_marginTop="6dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/test2"
+            android:textSize="28sp"
+            android:layout_below="@+id/touxiang"
+            android:textColor="@color/write"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="8dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/test3"
+            android:textSize="20sp"
+            android:layout_below="@+id/test2"
+            android:textColor="@color/dark_grey"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="@color/write"
+            android:layout_width="1dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="2dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_height="match_parent"/>
+
+</RelativeLayout>

@@ -46,7 +46,10 @@ public class CameraManager implements CameraPreview.CameraPreviewListener {
 
     private boolean isSupportedPreviewSize(int width, int height, Camera mCamera) {
         Camera.Parameters camPara = mCamera.getParameters();
-        List<Camera.Size> allSupportedSize = camPara.getSupportedPreviewSizes();
+        List<Camera.Size> allSupportedSize = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
+            allSupportedSize = camPara.getSupportedPreviewSizes();
+        }
         for (Camera.Size tmpSize : allSupportedSize) {
             Log.i("metrics", "support height" + tmpSize.height + "width " + tmpSize.width);
             if (tmpSize.height == height && tmpSize.width == width)
@@ -57,7 +60,10 @@ public class CameraManager implements CameraPreview.CameraPreviewListener {
 
     private static Camera.Size getBestPreviewSize(Camera mCamera) {
         Camera.Parameters camPara = mCamera.getParameters();
-        List<Camera.Size> allSupportedSize = camPara.getSupportedPreviewSizes();
+        List<Camera.Size> allSupportedSize = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ECLAIR) {
+            allSupportedSize = camPara.getSupportedPreviewSizes();
+        }
         ArrayList<Camera.Size> widthLargerSize = new ArrayList<Camera.Size>();
         int max = Integer.MIN_VALUE;
         Camera.Size maxSize = null;
