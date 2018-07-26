@@ -1115,7 +1115,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             private void getHandleSyncGroupData(final String paramsValue) {
 
-                // TODO: 2017/12/6
                 ByteRequest request = new ByteRequest(Request.Method.POST, "http://" + serverIP + ":8080/api/service/sync/v1", new Response.Listener<byte[]>() {
                     @Override
                     public void onResponse(byte[] response) {
