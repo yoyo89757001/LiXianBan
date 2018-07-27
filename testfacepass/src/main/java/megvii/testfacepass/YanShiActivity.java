@@ -780,11 +780,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         faceView.addId("ID = " + face.trackId);
                         faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
                         faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
-                        faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
+//                        faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
                         if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
                             faceView.addAge("年龄: " + face.age);
                             faceView.addGenders(faceGenderString.toString());
+                            faceView.addBlur("颜值: 请正对屏幕" );
+                            faceView.addYaw("眼镜: 请正对屏幕");
 
                             //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
                             try{
@@ -798,7 +800,6 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                         face.rect.right-face.rect.left,face.rect.bottom-face.rect.top);
                                 getOkHttpClient2(bitmap,face);
 
-                                faceView.addBlur("颜值: 请正对屏幕" );
 
                             }catch(Exception ex){
                                 Log.e("Sys","Error:"+ex.getMessage());
@@ -807,6 +808,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         }else {
                             faceView.addAge("年龄: 请正对屏幕" );
                             faceView.addGenders("性别: 请正对屏幕" );
+                            faceView.addYaw("眼镜: 分析中...");
                             faceView.addBlur("颜值: 分析中..." );
                         }
                     }
@@ -895,12 +897,20 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         faceView.addId("ID = " + face.trackId);
                         faceView.addRoll("旋转: " + (int) lingshi.getFacePassFace().pose.roll + "°");
                         faceView.addPitch("上下: " + (int) lingshi.getFacePassFace().pose.pitch + "°");
-                        faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
+                     //   faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
 //                           faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
 
                         faceView.addAge("年龄: " + lingshi.getFacePassFace().age);
                         faceView.addGenders(faceGenderString.toString());
                         faceView.addBlur("颜值: " + (lingshi.getFacePassFace().gender==1?lingshi.getFaces().get(0).getAttributes().getBeauty().getFemale_score():lingshi.getFaces().get(0).getAttributes().getBeauty().getMale_score()));
+                        String sp=lingshi.getFaces().get(0).getAttributes().getGlass().getValue();
+                        if (sp.equals("None")){
+                            faceView.addYaw("未佩戴眼镜");
+                        }else if (sp.equals("Dark")){
+                            faceView.addYaw("佩戴了墨镜");
+                        }else {
+                            faceView.addYaw("佩戴了普通眼镜");
+                        }
 
                     }
                     else {
@@ -977,11 +987,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             faceView.addId("ID = " + face.trackId);
                             faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
                             faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
-                            faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
+                         //   faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
                             if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
                                 faceView.addAge("年龄: " + face.age);
                                 faceView.addGenders(faceGenderString.toString());
+                                faceView.addBlur("颜值: 请正对屏幕" );
+                                faceView.addYaw("眼镜: 识别中...");
 
                                 //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
                                 try{
@@ -995,8 +1007,6 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                             face.rect.right-face.rect.left,face.rect.bottom-face.rect.top);
                                     getOkHttpClient2(bitmap,face);
 
-                                    faceView.addBlur("颜值: 请正对屏幕" );
-
                                 }catch(Exception ex){
                                     Log.e("Sys","Error:"+ex.getMessage());
                                 }
@@ -1005,6 +1015,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                 faceView.addAge("年龄: 请正对屏幕" );
                                 faceView.addGenders("性别: 请正对屏幕" );
                                 faceView.addBlur("颜值: 分析中..." );
+                                faceView.addYaw("眼镜: 识别中...");
                             }
                     }
 
