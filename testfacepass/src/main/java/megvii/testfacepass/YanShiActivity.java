@@ -5,7 +5,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ActivityNotFoundException;
+
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -32,9 +32,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 
 import android.text.TextUtils;
@@ -48,12 +48,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
+
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.ScrollView;
+
+
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +62,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -75,10 +75,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import butterknife.internal.Utils;
+
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
-import megvii.facepass.types.FacePassAddFaceResult;
+
 import megvii.facepass.types.FacePassConfig;
 import megvii.facepass.types.FacePassDetectionResult;
 import megvii.facepass.types.FacePassFace;
@@ -90,9 +90,7 @@ import megvii.facepass.types.FacePassModel;
 import megvii.facepass.types.FacePassPose;
 import megvii.facepass.types.FacePassRecognitionResult;
 import megvii.facepass.types.FacePassRecognitionResultType;
-
-import megvii.testfacepass.adapter.FaceTokenAdapter;
-import megvii.testfacepass.adapter.GroupNameAdapter;
+import megvii.testfacepass.adapter.MyRecyclerAdapter;
 import megvii.testfacepass.beans.YanZhiBean;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
@@ -117,7 +115,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private static final int MSG_SHOW_TOAST = 1;
     private int dw,dh;
     private static final int DELAY_MILLION_SHOW_TOAST = 2000;
-
+    private RecyclerView recyclerView;
+    private MyRecyclerAdapter yanZhiadapter;
     /* 识别服务器IP */
   //  private static final String serverIP_offline = "10.104.44.50";//offline
    // private static final String serverIP_online = "10.199.1.14";
@@ -606,6 +605,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
             screenState = 0;
         }
         setContentView(R.layout.activity_yanshi);
+        recyclerView= (RecyclerView) findViewById(R.id.reclelist);
+       // yanZhiadapter=new MyRecyclerAdapter(YanShiActivity.this,);
 
         ceshi= (ImageView) findViewById(R.id.ceshi);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -730,10 +731,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                 faceGenderString.append("性别: 男");
                                 break;
                             case 1:
-                                faceGenderString.append("性别: 女");
+                                faceGenderString.append("女");
                                 break;
                             default:
-                                faceGenderString.append("性别: 未知");
+                                faceGenderString.append("未知");
                         }
 
                         Matrix mat = new Matrix();
@@ -796,7 +797,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
 //                        faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
                         if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
-                            faceView.addAge("年龄: " + face.age);
+                            faceView.addAge("" + face.age);
                             faceView.addGenders(faceGenderString.toString());
                             faceView.addBlur("颜值: 请正对屏幕" );
                             faceView.addYaw("眼镜: 请正对屏幕");
@@ -852,13 +853,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         StringBuilder faceGenderString = new StringBuilder();
                         switch (lingshi.getFacePassFace().gender) {
                             case 0:
-                                faceGenderString.append("性别: 男");
+                                faceGenderString.append("男");
                                 break;
                             case 1:
-                                faceGenderString.append("性别: 女");
+                                faceGenderString.append("女");
                                 break;
                             default:
-                                faceGenderString.append("性别: 未知");
+                                faceGenderString.append("未知");
                         }
 
                         Matrix mat = new Matrix();
@@ -921,7 +922,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                      //   faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
 //                           faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
 
-                        faceView.addAge("年龄: " + lingshi.getFacePassFace().age);
+                        faceView.addAge("" + lingshi.getFacePassFace().age);
                         faceView.addGenders(faceGenderString.toString());
                         faceView.addBlur("颜值: " + (lingshi.getFacePassFace().gender==1?lingshi.getFaces().get(0).getAttributes().getBeauty().getFemale_score():lingshi.getFaces().get(0).getAttributes().getBeauty().getMale_score()));
                         String sp=lingshi.getFaces().get(0).getAttributes().getGlass().getValue();
@@ -964,13 +965,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             StringBuilder faceGenderString = new StringBuilder();
                             switch (face.gender) {
                                 case 0:
-                                    faceGenderString.append("性别: 男");
+                                    faceGenderString.append("男");
                                     break;
                                 case 1:
-                                    faceGenderString.append("性别: 女");
+                                    faceGenderString.append("女");
                                     break;
                                 default:
-                                    faceGenderString.append("性别: 未知");
+                                    faceGenderString.append("未知");
                             }
 
                             Matrix mat = new Matrix();
@@ -1033,7 +1034,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                          //   faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
                             if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
-                                faceView.addAge("年龄: " + face.age);
+                                faceView.addAge("" + face.age);
                                 faceView.addGenders(faceGenderString.toString());
                                 faceView.addBlur("颜值: 分析中..." );
                                 faceView.addYaw("眼镜: 分析中...");
@@ -1133,7 +1134,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                 .add("api_key", "BBDRR-nwJM38qGHUiBV0k4eMUZ2jDsa1")
                 .add("api_secret", "YDhcIhcjc5OVnDVQvspwSoSQnjM-fWYn")
                 .add("image_base64", batt)
-                .add("return_attributes", "emotion,eyestatus,beauty")
+                .add("return_attributes", "emotion,eyestatus,beauty,skinstatus")
                 .build();
 
         Request.Builder requestBuilder = new Request.Builder();

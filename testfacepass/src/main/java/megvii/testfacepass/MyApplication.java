@@ -4,23 +4,16 @@ package megvii.testfacepass;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-
 import android.os.Environment;
 import android.support.multidex.MultiDexApplication;
 import android.util.Log;
-
-
-
+import com.yatoooon.screenadaptation.ScreenAdapterTools;
 import java.io.File;
 
-
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 
 
@@ -44,7 +37,7 @@ public class MyApplication extends MultiDexApplication {
 		super.onCreate();
 
 		try {
-
+			ScreenAdapterTools.init(this);
 
 //			setDatabase();
 
