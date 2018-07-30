@@ -69,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -118,7 +119,6 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private static final int DELAY_MILLION_SHOW_TOAST = 2000;
 
     /* 识别服务器IP */
-
   //  private static final String serverIP_offline = "10.104.44.50";//offline
    // private static final String serverIP_online = "10.199.1.14";
   //  private static String serverIP;
@@ -141,6 +141,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private static final String PERMISSION_ACCESS_NETWORK_STATE = Manifest.permission.ACCESS_NETWORK_STATE;
     private String[] Permission = new String[]{PERMISSION_CAMERA, PERMISSION_WRITE_STORAGE, PERMISSION_READ_STORAGE, PERMISSION_INTERNET, PERMISSION_ACCESS_NETWORK_STATE};
 
+    private String [] duanyuString=new String[10];
 
     /* SDK 实例对象 */
     FacePassHandler mFacePassHandler;
@@ -156,8 +157,6 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
 
     /* 在预览界面圈出人脸 */
     private FaceView faceView;
-
-
 
     /* 相机是否使用前置摄像头 */
     private static boolean cameraFacingFront = true;
@@ -248,6 +247,17 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         } else {
             initFacePassSDK();
         }
+        duanyuString[0]="我愿意先颠沛流离再遇见温暖的你";
+        duanyuString[1]="年少轻狂的好日子、一懂事就结束 !";
+        duanyuString[2]="最珍贵的财富是时间,最大的浪费是虚度流年.";
+        duanyuString[3]="做事重在坚持，为人重在有爱。";
+        duanyuString[4]="得不到的付出，最好学会适可而止";
+        duanyuString[5]="不要等待机会,而要创造机会";
+        duanyuString[6]="勤奋是你生命的密码,能译出你一部壮丽的史诗";
+        duanyuString[7]="人之所以能，是相信能";
+        duanyuString[8]="懂得低头，才能出头。";
+        duanyuString[9]="含泪播种的人，一定能含笑收获";
+
 
         initFaceHandler();
         mRecognizeThread = new RecognizeThread();
@@ -413,6 +423,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
             e.printStackTrace();
             return;
         }
+
+     //   ceshi.setImageBitmap();
 
         mFeedFrameQueue.offer(image);
     }
@@ -715,10 +727,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         StringBuilder faceGenderString = new StringBuilder();
                         switch (face.gender) {
                             case 0:
-                                faceGenderString.append("性别: 男性");
+                                faceGenderString.append("性别: 男");
                                 break;
                             case 1:
-                                faceGenderString.append("性别: 女性");
+                                faceGenderString.append("性别: 女");
                                 break;
                             default:
                                 faceGenderString.append("性别: 未知");
@@ -779,7 +791,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         mat.mapRect(drect, srect);
                         faceView.addRect(drect);
                         faceView.addId("ID = " + face.trackId);
-                        faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
+
 //                        faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
 //                        faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
@@ -788,7 +800,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             faceView.addGenders(faceGenderString.toString());
                             faceView.addBlur("颜值: 请正对屏幕" );
                             faceView.addYaw("眼镜: 请正对屏幕");
-                            faceView.addPitch("表情: 请正对屏幕");
+                            faceView.addPitch("");
+                            faceView.addRoll("");
+                            faceView.addBitmaps(null);
                             //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
                             try{
                                 //获取图片
@@ -797,8 +811,11 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                 image2.compressToJpeg(new Rect(0, 0, image.width, image.height), 100, stream);
                                 Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
                                 stream.close();
-                                Bitmap bitmap=Bitmap.createBitmap(bmp,face.rect.left,face.rect.top,
-                                        face.rect.right-face.rect.left,face.rect.bottom-face.rect.top);
+                                Bitmap bitmap=Bitmap.createBitmap(bmp,(face.rect.left-20)<0?0:face.rect.left-20,
+                                        face.rect.top-200<0?0:face.rect.top-200,
+                                        (face.rect.right-face.rect.left+40)>image.width?image.width:(face.rect.right-face.rect.left+40),
+                                        (face.rect.bottom-face.rect.top+180)>image.height?image.height:(face.rect.bottom-face.rect.top+180));
+
                                 getOkHttpClient2(bitmap,face);
 
 
@@ -807,11 +824,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             }
 
                         }else {
-                            faceView.addAge("年龄: 请正对屏幕" );
+                            faceView.addAge("" );
                             faceView.addGenders("性别: 请正对屏幕" );
                             faceView.addYaw("眼镜: 分析中...");
                             faceView.addBlur("颜值: 分析中..." );
-                            faceView.addPitch("表情: 分析中...");
+                            faceView.addPitch("");
+                            faceView.addRoll("");
+                            faceView.addBitmaps(null);
                         }
                     }
 
@@ -833,10 +852,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         StringBuilder faceGenderString = new StringBuilder();
                         switch (lingshi.getFacePassFace().gender) {
                             case 0:
-                                faceGenderString.append("性别: 男性");
+                                faceGenderString.append("性别: 男");
                                 break;
                             case 1:
-                                faceGenderString.append("性别: 女性");
+                                faceGenderString.append("性别: 女");
                                 break;
                             default:
                                 faceGenderString.append("性别: 未知");
@@ -897,7 +916,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         mat.mapRect(drect, srect);
                         faceView.addRect(drect);
                         faceView.addId("ID = " + face.trackId);
-                        faceView.addRoll("旋转: " + (int) lingshi.getFacePassFace().pose.roll + "°");
+                  //      faceView.addRoll("旋转: " + (int) lingshi.getFacePassFace().pose.roll + "°");
                     //    faceView.addPitch("上下: " + (int) lingshi.getFacePassFace().pose.pitch + "°");
                      //   faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
 //                           faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
@@ -913,6 +932,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         }else {
                             faceView.addYaw("佩戴了普通眼镜");
                         }
+                        faceView.addRoll(lingshi.getXiehouyu());
+                        faceView.addBitmaps(lingshi.getBitmap());
 
                        YanZhiBean.FacesBean.AttributesBean.EmotionBean nn= lingshi.getFaces().get(0).getAttributes().getEmotion();
                         HashMap<Double,String> kk=new HashMap<>();
@@ -932,8 +953,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         kk.put(a[5],"悲伤");
                         kk.put(a[6],"惊讶");
                         Arrays.sort(a);  //进行排序
-                        faceView.addPitch("表情: "+kk.get(a[6]));
-
+                        faceView.addPitch(kk.get(a[6]));
 
                     }
                     else {
@@ -944,10 +964,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             StringBuilder faceGenderString = new StringBuilder();
                             switch (face.gender) {
                                 case 0:
-                                    faceGenderString.append("性别: 男性");
+                                    faceGenderString.append("性别: 男");
                                     break;
                                 case 1:
-                                    faceGenderString.append("性别: 女性");
+                                    faceGenderString.append("性别: 女");
                                     break;
                                 default:
                                     faceGenderString.append("性别: 未知");
@@ -1008,7 +1028,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             mat.mapRect(drect, srect);
                             faceView.addRect(drect);
                             faceView.addId("ID = " + face.trackId);
-                            faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
+                      //      faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
                       //      faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
                          //   faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
 //                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
@@ -1017,7 +1037,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                 faceView.addGenders(faceGenderString.toString());
                                 faceView.addBlur("颜值: 分析中..." );
                                 faceView.addYaw("眼镜: 分析中...");
-                                faceView.addPitch("表情: 分析中...");
+                                faceView.addPitch("");
+                                faceView.addRoll("");
+                                faceView.addBitmaps(null);
+
                                 //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
                                 try{
                                     //获取图片
@@ -1026,8 +1049,11 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                     image2.compressToJpeg(new Rect(0, 0, image.width, image.height), 100, stream);
                                     Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
                                     stream.close();
-                                    Bitmap bitmap=Bitmap.createBitmap(bmp,face.rect.left,face.rect.top,
-                                            face.rect.right-face.rect.left,face.rect.bottom-face.rect.top);
+                                    Bitmap bitmap=Bitmap.createBitmap(bmp,(face.rect.left-20)<0?0:face.rect.left-20,
+                                            face.rect.top-200<0?0:face.rect.top-200,
+                                            (face.rect.right-face.rect.left+40)>image.width?image.width:(face.rect.right-face.rect.left+40),
+                                            (face.rect.bottom-face.rect.top+180)>image.height?image.height:(face.rect.bottom-face.rect.top+180));
+
                                     getOkHttpClient2(bitmap,face);
 
                                 }catch(Exception ex){
@@ -1035,11 +1061,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                 }
 
                             }else {
-                                faceView.addAge("年龄: 请正对屏幕" );
+                                faceView.addAge("" );
                                 faceView.addGenders("性别: 请正对屏幕" );
                                 faceView.addBlur("颜值: 分析中..." );
                                 faceView.addYaw("眼镜: 分析中...");
-                                faceView.addPitch("表情: 分析中...");
+                                faceView.addPitch("");
+                                faceView.addRoll("");
+                                faceView.addBitmaps(null);
                             }
                     }
 
@@ -1140,6 +1168,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                     Gson gson = new Gson();
                     YanZhiBean menBean = gson.fromJson(jsonObject, YanZhiBean.class);
                     if (menBean.getFaces()!=null && menBean.getFaces().get(0)!=null ){
+                        menBean.setBitmap(bitmap);
+                        Random random = new Random();
+                        menBean.setXiehouyu(duanyuString[ random.nextInt(10)]);
                         menBean.setFacePassFace(facePassFace);
                         yanzhengBlockQueue.put(menBean);
                     }

@@ -1,5 +1,7 @@
 package megvii.testfacepass.beans;
 
+import android.graphics.Bitmap;
+
 import java.util.List;
 
 import megvii.facepass.types.FacePassFace;
@@ -16,12 +18,28 @@ public class YanZhiBean {
      * time_used : 242
      * faces : [{"attributes":{"emotion":{"sadness":4.135,"neutral":94.091,"disgust":0.002,"anger":0.002,"surprise":1.765,"fear":0.003,"happiness":0.002},"glass":{"value":"None"},"eyestatus":{"left_eye_status":{"normal_glass_eye_open":0.01,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.99,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0.008,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.992,"normal_glass_eye_close":0,"dark_glasses":0}},"beauty":{"female_score":66.408,"male_score":66.856}},"face_rectangle":{"width":370,"top":5,"left":3,"height":370},"face_token":"f31e084223ead678cf5373999d44b1df"}]
      */
-
-
+    private Bitmap bitmap;
+    private String xiehouyu;
     private FacePassFace facePassFace;
     private String request_id;
     private long time_used;
     private List<FacesBean> faces;
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    public String getXiehouyu() {
+        return xiehouyu;
+    }
+
+    public void setXiehouyu(String xiehouyu) {
+        this.xiehouyu = xiehouyu;
+    }
 
     public FacePassFace getFacePassFace() {
         return facePassFace;
