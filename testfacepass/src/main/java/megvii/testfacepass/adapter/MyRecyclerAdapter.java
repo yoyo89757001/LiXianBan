@@ -1,8 +1,8 @@
 package megvii.testfacepass.adapter;
 
 import android.content.Context;
-import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +14,8 @@ import com.yatoooon.screenadaptation.ScreenAdapterTools;
 import java.util.List;
 
 import megvii.testfacepass.R;
+import megvii.testfacepass.beans.PaiHangBean;
+
 
 /**
  * Created by Administrator on 2018/7/30.
@@ -21,11 +23,11 @@ import megvii.testfacepass.R;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
 
-    private List<ContactsContract.Contacts.Data> dataList;
+    private List<PaiHangBean> dataList;
 
     private LayoutInflater layoutInflater;
 
-    public MyRecyclerAdapter(Context context, List<ContactsContract.Contacts.Data> dataList) {
+    public MyRecyclerAdapter(Context context, List<PaiHangBean> dataList) {
         this.dataList = dataList;
         layoutInflater = LayoutInflater.from(context);
     }
@@ -40,7 +42,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         holder.xuhao.setText((position+1)+"");
-       // holder.shijian.setText(dataList.get(position).getContent());
+        holder.bianhao.setText(dataList.get(position).getBianhao());
+        String t[]=dataList.get(position).getTime().split(" ");
+        holder.shijian.setText(t[0]+"\n"+t[1]);
+
     }
 
     @Override

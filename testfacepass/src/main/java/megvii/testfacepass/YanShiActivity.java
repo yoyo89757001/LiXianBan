@@ -7,13 +7,11 @@ import android.app.Activity;
 import android.app.AlertDialog;
 
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -26,7 +24,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 import android.graphics.YuvImage;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -34,14 +31,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 
 import android.text.TextUtils;
-
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import android.util.LongSparseArray;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -56,29 +54,22 @@ import android.widget.LinearLayout;
 
 import android.widget.TextView;
 import android.widget.Toast;
-
-
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
 import java.io.ByteArrayOutputStream;
-
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-
 import megvii.facepass.FacePassException;
 import megvii.facepass.FacePassHandler;
 
+import megvii.facepass.types.FacePassAddFaceResult;
 import megvii.facepass.types.FacePassConfig;
 import megvii.facepass.types.FacePassDetectionResult;
 import megvii.facepass.types.FacePassFace;
@@ -91,12 +82,16 @@ import megvii.facepass.types.FacePassPose;
 import megvii.facepass.types.FacePassRecognitionResult;
 import megvii.facepass.types.FacePassRecognitionResultType;
 import megvii.testfacepass.adapter.MyRecyclerAdapter;
+import megvii.testfacepass.beans.DIKu;
+import megvii.testfacepass.beans.DIKuDao;
+import megvii.testfacepass.beans.PaiHangBean;
 import megvii.testfacepass.beans.YanZhiBean;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
 
 import megvii.testfacepass.cookies.CookiesManager;
+import megvii.testfacepass.utils.DateUtils;
 import megvii.testfacepass.utils.FileUtil;
 import megvii.testfacepass.utils.GsonUtil;
 import okhttp3.Call;
@@ -111,7 +106,7 @@ import okhttp3.Response;
 public class YanShiActivity extends Activity implements CameraManager.CameraListener {
 
     private static final String DEBUG_TAG = "FacePassDemo";
-
+    private DIKuDao diKuDao=MyApplication.myApplication.getDaoSession().getDIKuDao();
     private static final int MSG_SHOW_TOAST = 1;
     private int dw,dh;
     private static final int DELAY_MILLION_SHOW_TOAST = 2000;
@@ -126,7 +121,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private static final String apiKey = "CKbSYQqAuc5AzCMoOK-kbo9KaabtEciQ";
     private static final String apiSecret = "HeZgW5ILE83nKkqF-QO5IqEEmeRxPgeI";
 
-    private static String recognize_url;
+    private static long lingshiTokenid=0;
 
     /* 人脸识别Group */
     private static final String group_name = "face-pass-test-x";
@@ -197,6 +192,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     FacePassModel ageGenderModel;
 
     private static List<YanZhiBean> yanZhiBeans=new ArrayList<>(5);
+    private LongSparseArray<Bitmap> bitmapSparseArray=new LongSparseArray<>();
+
 
 
     FrameLayout frameLayout;
@@ -225,6 +222,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private Handler mAndroidHandler;
 
     private  static ValueAnimator animator = ValueAnimator.ofFloat(1f, 10f);
+    //排行榜
+    private List<PaiHangBean> paiHangLists=new ArrayList<>();
 
 
     @Override
@@ -342,6 +341,12 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                     trackModel, poseModel, blurModel, livenessModel, searchModel, detectModel, ageGenderModel);
                             /* 创建SDK实例 */
                             mFacePassHandler = new FacePassHandler(config);
+                            //建库
+                            mFacePassHandler.createLocalGroup(group_name);
+                            Bitmap bb=BitmapFactory.decodeResource(getResources(),R.drawable.fugui);
+                            Log.d("YanShiActivityrrrr", "mFacePassHandler.bindGroup(group_name, mFacePassHandler.addFace(bb).faceToken):" + mFacePassHandler.bindGroup(group_name, mFacePassHandler.addFace(bb).faceToken));
+
+
                             checkGroup();
                         } catch (FacePassException e) {
                             e.printStackTrace();
@@ -392,6 +397,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         for (String group : localGroups) {
             if (group_name.equals(group)) {
                 isLocalGroupExist = true;
+
             }
         }
         if (!isLocalGroupExist) {
@@ -448,7 +454,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             }
                         });
                     } else {
-                      //  Log.d("FeedFrameThread", "image:" + image);
+                        Log.d("bitmapSparseArray", "image:");
                         showFacePassFace(detectionResult.faceList,image);
                     }
 
@@ -457,7 +463,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         if (detectionResult != null && detectionResult.message.length != 0) {
                           //  Log.d(DEBUG_TAG, "mDetectResultQueue.offer");
                             mDetectResultQueue.offer(detectionResult.message);
-                            Log.d(DEBUG_TAG, "1 mDetectResultQueue.size = " + mDetectResultQueue.size());
+                            Log.d("bitmapSparseArray", "image222:");
                         }
 
 
@@ -478,27 +484,74 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         public void run() {
             while (!isInterrupt) {
                 try {
-                    Log.d(DEBUG_TAG, "2 mDetectResultQueue.size = " + mDetectResultQueue.size());
+                  //  Log.d(DEBUG_TAG, "2 mDetectResultQueue.size = " + mDetectResultQueue.size());
                     byte[] detectionResult = mDetectResultQueue.take();
 
-                    Log.d(DEBUG_TAG, "mDetectResultQueue.isLocalGroupExist");
                     if (isLocalGroupExist) {
-                        Log.d(DEBUG_TAG, "mDetectResultQueue.recognize");
+
                         FacePassRecognitionResult[] recognizeResult = mFacePassHandler.recognize(group_name, detectionResult);
+
                         if (recognizeResult != null && recognizeResult.length > 0) {
                             for (FacePassRecognitionResult result : recognizeResult) {
+
                                 String faceToken = new String(result.faceToken);
                                 if (FacePassRecognitionResultType.RECOG_OK == result.facePassRecognitionResultType) {
                                     getFaceImageByFaceToken(result.trackId, faceToken);
+                                    //识别成功的增加次数
+                                    Log.d("YanShiActivityrrrr", "识别");
+                                    Bitmap bb=bitmapSparseArray.get(result.trackId);
+
+                                    if (bb!=null){
+                                        getOkHttpClient2(bb,result.trackId);
+                                    }
+
+                                }else {
+
+                                   if (lingshiTokenid!=result.trackId){
+                                       Log.d("tttttttttttttttt", "dddddddddddddddddddd");
+
+                                       lingshiTokenid=result.trackId;
+                                       //不会重复
+                                       Bitmap bb=bitmapSparseArray.get(result.trackId);
+                                       Log.d("tttttttttttttttt", "33333333333333333");
+                                       if (bb!=null){
+                                           Log.d("tttttttttttttttt", "1111111111111");
+                                           FacePassAddFaceResult result33 = mFacePassHandler.addFace(bb);
+                                           if (result33 != null) {
+                                               if (result33.result == 0) {
+                                                   mFacePassHandler.bindGroup(group_name,result33.faceToken);
+                                                   DIKu diKu=new DIKu();
+                                                   diKu.setId(System.currentTimeMillis());
+                                                   diKu.setTeZhengMa(new String(result.faceToken));
+                                                   diKu.setTrackId(result.trackId);
+                                                   diKu.setTime(DateUtils.time(System.currentTimeMillis()+""));
+                                                   diKu.setCishu(1);
+                                                   diKuDao.insert(diKu);
+                                                 //  getOkHttpClient2(bb, result.trackId);
+
+                                                   Log.d("YanShiActivityrrrr", "入库成功");
+
+                                               }
+                                           }
+
+                                       }
+                                   }
+                                    Log.d("RecognizeThread", "识别2222");
+                                    //识别失败的入库，入库之后去公网
+                                    //入库
+//
+//
+
+
                                 }
-//                                showRecognizeResult(result.trackId, result.detail.searchScore, result.detail.livenessScore, !TextUtils.isEmpty(faceToken));
+
                             }
                         }
                     }
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.d("RecognizeThread", e.getMessage()+"插入");
                 } catch (FacePassException e) {
-                    e.printStackTrace();
+                    Log.d("RecognizeThread", e.getMessage()+"插入2");
                 }
             }
         }
@@ -606,7 +659,11 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         }
         setContentView(R.layout.activity_yanshi);
         recyclerView= (RecyclerView) findViewById(R.id.reclelist);
-       // yanZhiadapter=new MyRecyclerAdapter(YanShiActivity.this,);
+        LinearLayoutManager manager2=new LinearLayoutManager(this);
+        manager2.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(manager2);
+        yanZhiadapter=new MyRecyclerAdapter(YanShiActivity.this,paiHangLists);
+        recyclerView.setAdapter(yanZhiadapter);
 
         ceshi= (ImageView) findViewById(R.id.ceshi);
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -695,6 +752,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         if (mFeedFrameQueue != null) {
             mFeedFrameQueue.clear();
         }
+
         super.onDestroy();
     }
 
@@ -705,372 +763,254 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
             @Override
             public void run() {
                 faceView.clear();
-                YanZhiBean yanZhiBean=yanzhengBlockQueue.poll();
-                int size = 0;
-                if (yanZhiBean!=null) {
-                    yanZhiBeans.add(yanZhiBean);
-                     size = yanZhiBeans.size();
-                    if (size > 6) {
-                        yanZhiBeans.remove(0);
-                        size =size- 1;
-
-                    }
-                }else {
-                    size = yanZhiBeans.size();
-                }
-
 
                 for (FacePassFace face : result) {
-                    if (size==0){
-                        boolean mirror = cameraFacingFront; /* 前摄像头时mirror为true */
-                        // SpannableString faceViewString = new SpannableString(faceIdString);
-                        // faceViewString.setSpan(new TypefaceSpan("fonts/kai"), 0, faceViewString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        StringBuilder faceGenderString = new StringBuilder();
-                        switch (face.gender) {
-                            case 0:
-                                faceGenderString.append("性别: 男");
-                                break;
-                            case 1:
-                                faceGenderString.append("女");
-                                break;
-                            default:
-                                faceGenderString.append("未知");
-                        }
-
-                        Matrix mat = new Matrix();
-                        int w = cameraView.getMeasuredWidth();
-                        int h = cameraView.getMeasuredHeight();
-
-                        int cameraHeight = manager.getCameraheight();
-                        int cameraWidth = manager.getCameraWidth();
-
-                        float left = 0;
-                        float top = 0;
-                        float right = 0;
-                        float bottom = 0;
-                        switch (cameraRotation) {
-                            case 0:
-                                left = face.rect.left;
-                                top = face.rect.top;
-                                right = face.rect.right;
-                                bottom = face.rect.bottom;
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraWidth : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                break;
-                            case 90:
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                left = face.rect.top;
-                                top = cameraWidth - face.rect.right;
-                                right = face.rect.bottom;
-                                bottom = cameraWidth - face.rect.left;
-                                break;
-                            case 180:
-                                mat.setScale(1, mirror ? -1 : 1);
-                                mat.postTranslate(0f, mirror ? (float) cameraHeight : 0f);
-                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                left = face.rect.right;
-                                top = face.rect.bottom;
-                                right = face.rect.left;
-                                bottom = face.rect.top;
-                                break;
-                            case 270:
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                left = cameraHeight - face.rect.bottom;
-                                top = face.rect.left;
-                                right = cameraHeight - face.rect.top;
-                                bottom = face.rect.right;
-                        }
-
-                        RectF drect = new RectF();
-                        RectF srect = new RectF(left, top, right, bottom);
-
-                        mat.mapRect(drect, srect);
-                        faceView.addRect(drect);
-                        faceView.addId("ID = " + face.trackId);
-
-//                        faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
-//                        faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
-//                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
-                        if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
-                            faceView.addAge("" + face.age);
-                            faceView.addGenders(faceGenderString.toString());
-                            faceView.addBlur("颜值: 请正对屏幕" );
-                            faceView.addYaw("眼镜: 请正对屏幕");
-                            faceView.addPitch("");
-                            faceView.addRoll("");
-                            faceView.addBitmaps(null);
-                            //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
-                            try{
-                                //获取图片
+                 //   Log.d("YanShiActivityrrrr", "bitmapSparseArray.size()11111:"+face.pose.roll+"   "+face.pose.pitch +"   "+face.pose.yaw);
+                    if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<20 && face.pose.roll>-20 && face.pose.yaw<20 && face.pose.yaw>-20 && face.blur<0.2){
+                        try{
+                            //获取图片
+                          //  Log.d("YanShiActivityrrrr", "bitmapSparseArray.size()22222222:" );
                                 YuvImage image2 = new YuvImage(image.image, ImageFormat.NV21, image.width, image.height, null);
                                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                                 image2.compressToJpeg(new Rect(0, 0, image.width, image.height), 100, stream);
                                 Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
                                 stream.close();
-                                Bitmap bitmap=Bitmap.createBitmap(bmp,(face.rect.left-20)<0?0:face.rect.left-20,
-                                        face.rect.top-200<0?0:face.rect.top-200,
-                                        (face.rect.right-face.rect.left+40)>image.width?image.width:(face.rect.right-face.rect.left+40),
-                                        (face.rect.bottom-face.rect.top+180)>image.height?image.height:(face.rect.bottom-face.rect.top+180));
+                                Bitmap bitmap = Bitmap.createBitmap(bmp, (face.rect.left - 20) < 0 ? 0 : face.rect.left - 20,
+                                        face.rect.top - 180 < 0 ? 0 : face.rect.top - 180,
+                                        (face.rect.right - face.rect.left + 40) > image.width ? image.width : (face.rect.right - face.rect.left + 40),
+                                        (face.rect.bottom - face.rect.top + 220) > image.height ? image.height : (face.rect.bottom - face.rect.top + 220));
+                                  //
+                                    bitmapSparseArray.put(face.trackId,bitmap);
 
-                                getOkHttpClient2(bitmap,face);
+                         //   Log.d("YanShiActivityrrrr", "bitmapSparseArray.size():" + bitmapSparseArray.size());
+
+                                    if (bitmapSparseArray.size()>6){
+                                        bitmapSparseArray.removeAt(0);
+                                    }
 
 
-                            }catch(Exception ex){
-                                Log.e("Sys","Error:"+ex.getMessage());
-                            }
 
-                        }else {
-                            faceView.addAge("" );
-                            faceView.addGenders("性别: 请正对屏幕" );
-                            faceView.addYaw("眼镜: 分析中...");
-                            faceView.addBlur("颜值: 分析中..." );
-                            faceView.addPitch("");
-                            faceView.addRoll("");
-                            faceView.addBitmaps(null);
+                                //getOkHttpClient2(bitmap, face);
+
+
+                        }catch(Exception ex){
+                            Log.e("Sys","Error:"+ex.getMessage());
                         }
+
                     }
 
-                    int p=0;
-                    YanZhiBean lingshi=null;
-                    for (int i=0;i<size;i++){
-                        lingshi=yanZhiBeans.get(i);
-                        if (face.trackId==lingshi.getFacePassFace().trackId){
-                            p=1;
-                            break;
-                        }
-                    }
-                    if (p==1){
 
-                        //相等
-                        boolean mirror = cameraFacingFront; /* 前摄像头时mirror为true */
-                        // SpannableString faceViewString = new SpannableString(faceIdString);
-                        // faceViewString.setSpan(new TypefaceSpan("fonts/kai"), 0, faceViewString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        StringBuilder faceGenderString = new StringBuilder();
-                        switch (lingshi.getFacePassFace().gender) {
-                            case 0:
-                                faceGenderString.append("男");
-                                break;
-                            case 1:
-                                faceGenderString.append("女");
-                                break;
-                            default:
-                                faceGenderString.append("未知");
-                        }
-
-                        Matrix mat = new Matrix();
-                        int w = cameraView.getMeasuredWidth();
-                        int h = cameraView.getMeasuredHeight();
-
-                        int cameraHeight = manager.getCameraheight();
-                        int cameraWidth = manager.getCameraWidth();
-
-                        float left = 0;
-                        float top = 0;
-                        float right = 0;
-                        float bottom = 0;
-                        switch (cameraRotation) {
-                            case 0:
-                                left = face.rect.left;
-                                top = face.rect.top;
-                                right = face.rect.right;
-                                bottom = face.rect.bottom;
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraWidth : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                break;
-                            case 90:
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                left = face.rect.top;
-                                top = cameraWidth - face.rect.right;
-                                right = face.rect.bottom;
-                                bottom = cameraWidth - face.rect.left;
-                                break;
-                            case 180:
-                                mat.setScale(1, mirror ? -1 : 1);
-                                mat.postTranslate(0f, mirror ? (float) cameraHeight : 0f);
-                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                left = face.rect.right;
-                                top = face.rect.bottom;
-                                right = face.rect.left;
-                                bottom = face.rect.top;
-                                break;
-                            case 270:
-                                mat.setScale(mirror ? -1 : 1, 1);
-                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                left = cameraHeight - face.rect.bottom;
-                                top = face.rect.left;
-                                right = cameraHeight - face.rect.top;
-                                bottom = face.rect.right;
-                        }
-
-                        RectF drect = new RectF();
-                        RectF srect = new RectF(left, top, right, bottom);
-
-                        mat.mapRect(drect, srect);
-                        faceView.addRect(drect);
-                        faceView.addId("ID = " + face.trackId);
-                  //      faceView.addRoll("旋转: " + (int) lingshi.getFacePassFace().pose.roll + "°");
-                    //    faceView.addPitch("上下: " + (int) lingshi.getFacePassFace().pose.pitch + "°");
-                     //   faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
-//                           faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
-
-                        faceView.addAge("" + lingshi.getFacePassFace().age);
-                        faceView.addGenders(faceGenderString.toString());
-                        faceView.addBlur("颜值: " + (lingshi.getFacePassFace().gender==1?lingshi.getFaces().get(0).getAttributes().getBeauty().getFemale_score():lingshi.getFaces().get(0).getAttributes().getBeauty().getMale_score()));
-                        String sp=lingshi.getFaces().get(0).getAttributes().getGlass().getValue();
-                        if (sp.equals("None")){
-                            faceView.addYaw("未佩戴眼镜");
-                        }else if (sp.equals("Dark")){
-                            faceView.addYaw("佩戴了墨镜");
-                        }else {
-                            faceView.addYaw("佩戴了普通眼镜");
-                        }
-                        faceView.addRoll(lingshi.getXiehouyu());
-                        faceView.addBitmaps(lingshi.getBitmap());
-
-                       YanZhiBean.FacesBean.AttributesBean.EmotionBean nn= lingshi.getFaces().get(0).getAttributes().getEmotion();
-                        HashMap<Double,String> kk=new HashMap<>();
-                        double[] a=new double[7];
-                        a[0]=nn.getAnger();
-                        a[1]=nn.getDisgust();
-                        a[2]=nn.getFear();
-                        a[3]=nn.getHappiness();
-                        a[4]=nn.getNeutral();
-                        a[5]=nn.getSadness();
-                        a[6]=nn.getSurprise();
-                        kk.put(a[0],"愤怒");
-                        kk.put(a[1],"厌恶");
-                        kk.put(a[2],"害怕");
-                        kk.put(a[3],"高兴");
-                        kk.put(a[4],"平静");
-                        kk.put(a[5],"悲伤");
-                        kk.put(a[6],"惊讶");
-                        Arrays.sort(a);  //进行排序
-                        faceView.addPitch(kk.get(a[6]));
-
-                    }
-                    else {
-                            //不想等的
-                            boolean mirror = cameraFacingFront; /* 前摄像头时mirror为true */
-                            // SpannableString faceViewString = new SpannableString(faceIdString);
-                            // faceViewString.setSpan(new TypefaceSpan("fonts/kai"), 0, faceViewString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            StringBuilder faceGenderString = new StringBuilder();
-                            switch (face.gender) {
-                                case 0:
-                                    faceGenderString.append("男");
-                                    break;
-                                case 1:
-                                    faceGenderString.append("女");
-                                    break;
-                                default:
-                                    faceGenderString.append("未知");
-                            }
-
-                            Matrix mat = new Matrix();
-                            int w = cameraView.getMeasuredWidth();
-                            int h = cameraView.getMeasuredHeight();
-
-                            int cameraHeight = manager.getCameraheight();
-                            int cameraWidth = manager.getCameraWidth();
-
-                            float left = 0;
-                            float top = 0;
-                            float right = 0;
-                            float bottom = 0;
-                            switch (cameraRotation) {
-                                case 0:
-                                    left = face.rect.left;
-                                    top = face.rect.top;
-                                    right = face.rect.right;
-                                    bottom = face.rect.bottom;
-                                    mat.setScale(mirror ? -1 : 1, 1);
-                                    mat.postTranslate(mirror ? (float) cameraWidth : 0f, 0f);
-                                    mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                    break;
-                                case 90:
-                                    mat.setScale(mirror ? -1 : 1, 1);
-                                    mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                    mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                    left = face.rect.top;
-                                    top = cameraWidth - face.rect.right;
-                                    right = face.rect.bottom;
-                                    bottom = cameraWidth - face.rect.left;
-                                    break;
-                                case 180:
-                                    mat.setScale(1, mirror ? -1 : 1);
-                                    mat.postTranslate(0f, mirror ? (float) cameraHeight : 0f);
-                                    mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
-                                    left = face.rect.right;
-                                    top = face.rect.bottom;
-                                    right = face.rect.left;
-                                    bottom = face.rect.top;
-                                    break;
-                                case 270:
-                                    mat.setScale(mirror ? -1 : 1, 1);
-                                    mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
-                                    mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
-                                    left = cameraHeight - face.rect.bottom;
-                                    top = face.rect.left;
-                                    right = cameraHeight - face.rect.top;
-                                    bottom = face.rect.right;
-                            }
-
-                            RectF drect = new RectF();
-                            RectF srect = new RectF(left, top, right, bottom);
-
-                            mat.mapRect(drect, srect);
-                            faceView.addRect(drect);
-                            faceView.addId("ID = " + face.trackId);
-                      //      faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
-                      //      faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
-                         //   faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
-//                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
-                            if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
-                                faceView.addAge("" + face.age);
-                                faceView.addGenders(faceGenderString.toString());
-                                faceView.addBlur("颜值: 分析中..." );
-                                faceView.addYaw("眼镜: 分析中...");
-                                faceView.addPitch("");
-                                faceView.addRoll("");
-                                faceView.addBitmaps(null);
-
-                                //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
-                                try{
-                                    //获取图片
-                                    YuvImage image2 = new YuvImage(image.image, ImageFormat.NV21, image.width, image.height, null);
-                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                                    image2.compressToJpeg(new Rect(0, 0, image.width, image.height), 100, stream);
-                                    Bitmap bmp = BitmapFactory.decodeByteArray(stream.toByteArray(), 0, stream.size());
-                                    stream.close();
-                                    Bitmap bitmap=Bitmap.createBitmap(bmp,(face.rect.left-20)<0?0:face.rect.left-20,
-                                            face.rect.top-200<0?0:face.rect.top-200,
-                                            (face.rect.right-face.rect.left+40)>image.width?image.width:(face.rect.right-face.rect.left+40),
-                                            (face.rect.bottom-face.rect.top+180)>image.height?image.height:(face.rect.bottom-face.rect.top+180));
-
-                                    getOkHttpClient2(bitmap,face);
-
-                                }catch(Exception ex){
-                                    Log.e("Sys","Error:"+ex.getMessage());
-                                }
-
-                            }else {
-                                faceView.addAge("" );
-                                faceView.addGenders("性别: 请正对屏幕" );
-                                faceView.addBlur("颜值: 分析中..." );
-                                faceView.addYaw("眼镜: 分析中...");
-                                faceView.addPitch("");
-                                faceView.addRoll("");
-                                faceView.addBitmaps(null);
-                            }
-                    }
+//                    if (p==1){
+//
+//                        //相等
+//                        boolean mirror = cameraFacingFront; /* 前摄像头时mirror为true */
+//                        // SpannableString faceViewString = new SpannableString(faceIdString);
+//                        // faceViewString.setSpan(new TypefaceSpan("fonts/kai"), 0, faceViewString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                        StringBuilder faceGenderString = new StringBuilder();
+//                        switch (lingshi.getFacePassFace().gender) {
+//                            case 0:
+//                                faceGenderString.append("男");
+//                                break;
+//                            case 1:
+//                                faceGenderString.append("女");
+//                                break;
+//                            default:
+//                                faceGenderString.append("未知");
+//                        }
+//
+//                        Matrix mat = new Matrix();
+//                        int w = cameraView.getMeasuredWidth();
+//                        int h = cameraView.getMeasuredHeight();
+//
+//                        int cameraHeight = manager.getCameraheight();
+//                        int cameraWidth = manager.getCameraWidth();
+//
+//                        float left = 0;
+//                        float top = 0;
+//                        float right = 0;
+//                        float bottom = 0;
+//                        switch (cameraRotation) {
+//                            case 0:
+//                                left = face.rect.left;
+//                                top = face.rect.top;
+//                                right = face.rect.right;
+//                                bottom = face.rect.bottom;
+//                                mat.setScale(mirror ? -1 : 1, 1);
+//                                mat.postTranslate(mirror ? (float) cameraWidth : 0f, 0f);
+//                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
+//                                break;
+//                            case 90:
+//                                mat.setScale(mirror ? -1 : 1, 1);
+//                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
+//                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
+//                                left = face.rect.top;
+//                                top = cameraWidth - face.rect.right;
+//                                right = face.rect.bottom;
+//                                bottom = cameraWidth - face.rect.left;
+//                                break;
+//                            case 180:
+//                                mat.setScale(1, mirror ? -1 : 1);
+//                                mat.postTranslate(0f, mirror ? (float) cameraHeight : 0f);
+//                                mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
+//                                left = face.rect.right;
+//                                top = face.rect.bottom;
+//                                right = face.rect.left;
+//                                bottom = face.rect.top;
+//                                break;
+//                            case 270:
+//                                mat.setScale(mirror ? -1 : 1, 1);
+//                                mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
+//                                mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
+//                                left = cameraHeight - face.rect.bottom;
+//                                top = face.rect.left;
+//                                right = cameraHeight - face.rect.top;
+//                                bottom = face.rect.right;
+//                        }
+//
+//                        RectF drect = new RectF();
+//                        RectF srect = new RectF(left, top, right, bottom);
+//
+//                        mat.mapRect(drect, srect);
+//                        faceView.addRect(drect);
+//                        faceView.addId("ID = " + face.trackId);
+//                  //      faceView.addRoll("旋转: " + (int) lingshi.getFacePassFace().pose.roll + "°");
+//                    //    faceView.addPitch("上下: " + (int) lingshi.getFacePassFace().pose.pitch + "°");
+//                     //   faceView.addYaw("左右: " + (int) lingshi.getFacePassFace().pose.yaw + "°");
+////                           faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
+//
+//                        faceView.addAge("" + lingshi.getFacePassFace().age);
+//                        faceView.addGenders(faceGenderString.toString());
+//                        faceView.addBlur("颜值: " + (lingshi.getFacePassFace().gender==1?lingshi.getFaces().get(0).getAttributes().getBeauty().getFemale_score():lingshi.getFaces().get(0).getAttributes().getBeauty().getMale_score()));
+//                        String sp=lingshi.getFaces().get(0).getAttributes().getGlass().getValue();
+//                        if (sp.equals("None")){
+//                            faceView.addYaw("未佩戴眼镜");
+//                        }else if (sp.equals("Dark")){
+//                            faceView.addYaw("佩戴了墨镜");
+//                        }else {
+//                            faceView.addYaw("佩戴了普通眼镜");
+//                        }
+//                        faceView.addRoll(lingshi.getXiehouyu());
+//                        faceView.addBitmaps(lingshi.getBitmap());
+//
+//                       YanZhiBean.FacesBean.AttributesBean.EmotionBean nn= lingshi.getFaces().get(0).getAttributes().getEmotion();
+//                        HashMap<Double,String> kk=new HashMap<>();
+//                        double[] a=new double[7];
+//                        a[0]=nn.getAnger();
+//                        a[1]=nn.getDisgust();
+//                        a[2]=nn.getFear();
+//                        a[3]=nn.getHappiness();
+//                        a[4]=nn.getNeutral();
+//                        a[5]=nn.getSadness();
+//                        a[6]=nn.getSurprise();
+//                        kk.put(a[0],"愤怒");
+//                        kk.put(a[1],"厌恶");
+//                        kk.put(a[2],"害怕");
+//                        kk.put(a[3],"高兴");
+//                        kk.put(a[4],"平静");
+//                        kk.put(a[5],"悲伤");
+//                        kk.put(a[6],"惊讶");
+//                        Arrays.sort(a);  //进行排序
+//                        faceView.addPitch(kk.get(a[6]));
+//
+//                    }
+//                    else {
+//                            //不想等的
+//                            boolean mirror = cameraFacingFront; /* 前摄像头时mirror为true */
+//                            // SpannableString faceViewString = new SpannableString(faceIdString);
+//                            // faceViewString.setSpan(new TypefaceSpan("fonts/kai"), 0, faceViewString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                            StringBuilder faceGenderString = new StringBuilder();
+//                            switch (face.gender) {
+//                                case 0:
+//                                    faceGenderString.append("男");
+//                                    break;
+//                                case 1:
+//                                    faceGenderString.append("女");
+//                                    break;
+//                                default:
+//                                    faceGenderString.append("未知");
+//                            }
+//
+//                            Matrix mat = new Matrix();
+//                            int w = cameraView.getMeasuredWidth();
+//                            int h = cameraView.getMeasuredHeight();
+//
+//                            int cameraHeight = manager.getCameraheight();
+//                            int cameraWidth = manager.getCameraWidth();
+//
+//                            float left = 0;
+//                            float top = 0;
+//                            float right = 0;
+//                            float bottom = 0;
+//                            switch (cameraRotation) {
+//                                case 0:
+//                                    left = face.rect.left;
+//                                    top = face.rect.top;
+//                                    right = face.rect.right;
+//                                    bottom = face.rect.bottom;
+//                                    mat.setScale(mirror ? -1 : 1, 1);
+//                                    mat.postTranslate(mirror ? (float) cameraWidth : 0f, 0f);
+//                                    mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
+//                                    break;
+//                                case 90:
+//                                    mat.setScale(mirror ? -1 : 1, 1);
+//                                    mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
+//                                    mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
+//                                    left = face.rect.top;
+//                                    top = cameraWidth - face.rect.right;
+//                                    right = face.rect.bottom;
+//                                    bottom = cameraWidth - face.rect.left;
+//                                    break;
+//                                case 180:
+//                                    mat.setScale(1, mirror ? -1 : 1);
+//                                    mat.postTranslate(0f, mirror ? (float) cameraHeight : 0f);
+//                                    mat.postScale((float) w / (float) cameraWidth, (float) h / (float) cameraHeight);
+//                                    left = face.rect.right;
+//                                    top = face.rect.bottom;
+//                                    right = face.rect.left;
+//                                    bottom = face.rect.top;
+//                                    break;
+//                                case 270:
+//                                    mat.setScale(mirror ? -1 : 1, 1);
+//                                    mat.postTranslate(mirror ? (float) cameraHeight : 0f, 0f);
+//                                    mat.postScale((float) w / (float) cameraHeight, (float) h / (float) cameraWidth);
+//                                    left = cameraHeight - face.rect.bottom;
+//                                    top = face.rect.left;
+//                                    right = cameraHeight - face.rect.top;
+//                                    bottom = face.rect.right;
+//                            }
+//
+//                            RectF drect = new RectF();
+//                            RectF srect = new RectF(left, top, right, bottom);
+//
+//                            mat.mapRect(drect, srect);
+//                            faceView.addRect(drect);
+//                            faceView.addId("ID = " + face.trackId);
+//                      //      faceView.addRoll("旋转: " + (int) face.pose.roll + "°");
+//                      //      faceView.addPitch("上下: " + (int) face.pose.pitch + "°");
+//                         //   faceView.addYaw("左右: " + (int) face.pose.yaw + "°");
+////                    faceView.addBlur("模糊: " + String.format("%.2f", face.blur));
+//                            if (face.pose.pitch<20 && face.pose.pitch>-20 && face.pose.roll<16 && face.pose.roll>-16 && face.pose.yaw<16 && face.pose.yaw>-16 && face.blur<0.2){
+//                                faceView.addAge("" + face.age);
+//                                faceView.addGenders(faceGenderString.toString());
+//                                faceView.addBlur("颜值: 分析中..." );
+//                                faceView.addYaw("眼镜: 分析中...");
+//                                faceView.addPitch("");
+//                                faceView.addRoll("");
+//                                faceView.addBitmaps(null);
+//
+//                                //获取角度较好的bitmap 然后去公网拿到颜值等信息，带入id,  将id跟现在的id比对 相同的话就更新颜值等信息上去，不相同不做更新
+//
+//
+//                            }else {
+//                                faceView.addAge("" );
+//                                faceView.addGenders("性别: 请正对屏幕" );
+//                                faceView.addBlur("颜值: 分析中..." );
+//                                faceView.addYaw("眼镜: 分析中...");
+//                                faceView.addPitch("");
+//                                faceView.addRoll("");
+//                                faceView.addBitmaps(null);
+//                            }
+           //         }
 
                 }
                 faceView.invalidate();
@@ -1120,7 +1060,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
 
 
     //首先登录-->获取所有主机-->创建或者删除或者更新门禁
-    private void getOkHttpClient2(final Bitmap bitmap, final FacePassFace facePassFace){
+    private void getOkHttpClient2(final Bitmap bitmap, long trackId){
         final String batt=FileUtil.bitmapToBase64(bitmap);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .writeTimeout(TIMEOUT, TimeUnit.MILLISECONDS)
@@ -1134,7 +1074,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                 .add("api_key", "BBDRR-nwJM38qGHUiBV0k4eMUZ2jDsa1")
                 .add("api_secret", "YDhcIhcjc5OVnDVQvspwSoSQnjM-fWYn")
                 .add("image_base64", batt)
-                .add("return_attributes", "emotion,eyestatus,beauty,skinstatus")
+                .add("return_attributes", "gender,age,emotion,eyestatus,beauty,skinstatus")
                 .build();
 
         Request.Builder requestBuilder = new Request.Builder();
@@ -1148,6 +1088,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         mcall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+
                 Log.d("ffffff", "请求失败"+e.getMessage());
              //   SystemClock.sleep(800);
 //                try {
@@ -1163,6 +1104,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 try {
+
                     String s=response.body().string();
                     Log.d("fffffff", "检测"+s);
                     JsonObject jsonObject = GsonUtil.parse(s).getAsJsonObject();
@@ -1172,8 +1114,53 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         menBean.setBitmap(bitmap);
                         Random random = new Random();
                         menBean.setXiehouyu(duanyuString[ random.nextInt(10)]);
-                        menBean.setFacePassFace(facePassFace);
                         yanzhengBlockQueue.put(menBean);
+
+                        //入库
+                        FacePassAddFaceResult result = mFacePassHandler.addFace(bitmap);
+                        Log.d("YanShiActivityrrrr", "result:" + result.result);
+                        if (result != null) {
+                            if (result.result == 0) {
+                                Log.d("YanShiActivityrrrr", "mFacePassHandler.bindGroup(group_name,result.faceToken):" +
+                                        mFacePassHandler.bindGroup(group_name, result.faceToken));
+
+                                YanZhiBean.FacesBean.AttributesBean.SkinstatusBean nn=menBean.getFaces().get(0).getAttributes().getSkinstatus();
+                                HashMap<Double,String> kk=new HashMap<>();
+                                double[] a=new double[4];
+                                a[0]=nn.getAcne();
+                                a[1]=nn.getDark_circle();
+                                a[2]=nn.getHealth();
+                                a[3]=nn.getStain();
+                                kk.put(a[0],"青春痘");
+                                kk.put(a[1],"黑眼圈");
+                                kk.put(a[2],"健康");
+                                kk.put(a[3],"暗淡");
+                                Arrays.sort(a);  //进行排序
+
+                                //更新
+
+
+
+                            }
+                        }
+
+                        final PaiHangBean paiHangBean=new PaiHangBean();
+                        paiHangBean.setBianhao(menBean.getFacePassFace().trackId+"");
+                      //  (lingshi.getFacePassFace().gender==1?lingshi.getFaces().get(0).getAttributes().getBeauty().getFemale_score():lingshi.getFaces().get(0).getAttributes().getBeauty().getMale_score()
+                        paiHangBean.setYanzhi((menBean.getFacePassFace().gender==1?menBean.getFaces().get(0).getAttributes().getBeauty().getFemale_score():menBean.getFaces().get(0).getAttributes().getBeauty().getMale_score())+"");
+                        paiHangBean.setTime(megvii.testfacepass.utils.DateUtils.time(System.currentTimeMillis()+""));
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.d("YanShiActivity", "ddddddddddddddd");
+                                paiHangLists.add(paiHangBean);
+
+                                Log.d("YanShiActivity", "paiHangLists.size():" + paiHangLists.size());
+                                yanZhiadapter.notifyDataSetChanged();
+                            }
+                        });
+
                     }
 
 
