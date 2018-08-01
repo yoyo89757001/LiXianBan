@@ -15,7 +15,7 @@ public class DIKu {
     @NotNull
     private Long id;
     private String teZhengMa;
-    private int yanzhi;
+    private double yanzhi;
     private String fuzhi;
     private String time;
     private long trackId;
@@ -24,10 +24,12 @@ public class DIKu {
     private int nianl;
     private String xingbie;
     private int guanzhu;
-    @Generated(hash = 251034059)
-    public DIKu(@NotNull Long id, String teZhengMa, int yanzhi, String fuzhi,
+    private byte[] bytes;
+    private String biaoqing;
+    @Generated(hash = 210380642)
+    public DIKu(@NotNull Long id, String teZhengMa, double yanzhi, String fuzhi,
             String time, long trackId, int cishu, int paihang, int nianl,
-            String xingbie, int guanzhu) {
+            String xingbie, int guanzhu, byte[] bytes, String biaoqing) {
         this.id = id;
         this.teZhengMa = teZhengMa;
         this.yanzhi = yanzhi;
@@ -39,6 +41,8 @@ public class DIKu {
         this.nianl = nianl;
         this.xingbie = xingbie;
         this.guanzhu = guanzhu;
+        this.bytes = bytes;
+        this.biaoqing = biaoqing;
     }
     @Generated(hash = 220588313)
     public DIKu() {
@@ -55,10 +59,10 @@ public class DIKu {
     public void setTeZhengMa(String teZhengMa) {
         this.teZhengMa = teZhengMa;
     }
-    public int getYanzhi() {
+    public double getYanzhi() {
         return this.yanzhi;
     }
-    public void setYanzhi(int yanzhi) {
+    public void setYanzhi(double yanzhi) {
         this.yanzhi = yanzhi;
     }
     public String getFuzhi() {
@@ -108,6 +112,18 @@ public class DIKu {
     }
     public void setGuanzhu(int guanzhu) {
         this.guanzhu = guanzhu;
+    }
+    public byte[] getBytes() {
+        return this.bytes;
+    }
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+    public String getBiaoqing() {
+        return this.biaoqing;
+    }
+    public void setBiaoqing(String biaoqing) {
+        this.biaoqing = biaoqing;
     }
 
     

@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 
 import java.util.List;
 
-import megvii.facepass.types.FacePassFace;
-
 /**
  * Created by Administrator on 2018/7/27.
  */
@@ -14,35 +12,17 @@ public class YanZhiBean {
 
 
     /**
-     * image_id : HDC04qAY3c4SN82G7qcuvg==
-     * request_id : 1532947165,77146503-14f7-418d-b732-3bae631ae395
-     * time_used : 298
-     * faces : [{"attributes":{"emotion":{"sadness":0.194,"neutral":99.798,"disgust":0,"anger":0.003,"surprise":0.001,"fear":0,"happiness":0.003},"glass":{"value":"None"},"skinstatus":{"dark_circle":6.892,"stain":58.851,"acne":20.03,"health":0.4},"eyestatus":{"left_eye_status":{"normal_glass_eye_open":0.014,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.986,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":100,"normal_glass_eye_close":0,"dark_glasses":0}},"beauty":{"female_score":58.342,"male_score":59.1}},"face_rectangle":{"width":474,"top":206,"left":25,"height":474},"face_token":"8ae14657562566791f68693dbbb751cd"}]
+     * image_id : xJLyytxJttbntGS8zobZKA==
+     * request_id : 1533088774,2df17f98-5a90-4ef4-b016-8e43ed17fd71
+     * time_used : 262
+     * faces : [{"attributes":{"emotion":{"sadness":0.697,"neutral":99.154,"disgust":0.005,"anger":0.096,"surprise":0.005,"fear":0.005,"happiness":0.039},"beauty":{"female_score":63.322,"male_score":59.711},"gender":{"value":"Male"},"age":{"value":28},"eyestatus":{"left_eye_status":{"normal_glass_eye_open":0.021,"no_glass_eye_close":0.002,"occlusion":0.005,"no_glass_eye_open":99.972,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0.008,"no_glass_eye_close":0,"occlusion":0.001,"no_glass_eye_open":99.991,"normal_glass_eye_close":0,"dark_glasses":0}},"glass":{"value":"None"},"skinstatus":{"dark_circle":8.28,"stain":3.921,"acne":2.82,"health":26.959}},"face_rectangle":{"width":328,"top":175,"left":19,"height":328},"face_token":"98619f43b597a7a7b9d3e29f4aa2ea34"}]
      */
+
     private Bitmap bitmap;
-    private String xiehouyu;
-    private FacePassFace facePassFace;
+    private String image_id;
     private String request_id;
     private int time_used;
-    private long startTime;
-    private long endTime;
     private List<FacesBean> faces;
-
-    public long getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
-    }
-
-    public long getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
-    }
 
     public Bitmap getBitmap() {
         return bitmap;
@@ -52,20 +32,12 @@ public class YanZhiBean {
         this.bitmap = bitmap;
     }
 
-    public String getXiehouyu() {
-        return xiehouyu;
+    public String getImage_id() {
+        return image_id;
     }
 
-    public void setXiehouyu(String xiehouyu) {
-        this.xiehouyu = xiehouyu;
-    }
-
-    public FacePassFace getFacePassFace() {
-        return facePassFace;
-    }
-
-    public void setFacePassFace(FacePassFace facePassFace) {
-        this.facePassFace = facePassFace;
+    public void setImage_id(String image_id) {
+        this.image_id = image_id;
     }
 
     public String getRequest_id() {
@@ -94,9 +66,9 @@ public class YanZhiBean {
 
     public static class FacesBean {
         /**
-         * attributes : {"emotion":{"sadness":0.194,"neutral":99.798,"disgust":0,"anger":0.003,"surprise":0.001,"fear":0,"happiness":0.003},"glass":{"value":"None"},"skinstatus":{"dark_circle":6.892,"stain":58.851,"acne":20.03,"health":0.4},"eyestatus":{"left_eye_status":{"normal_glass_eye_open":0.014,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.986,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":100,"normal_glass_eye_close":0,"dark_glasses":0}},"beauty":{"female_score":58.342,"male_score":59.1}}
-         * face_rectangle : {"width":474,"top":206,"left":25,"height":474}
-         * face_token : 8ae14657562566791f68693dbbb751cd
+         * attributes : {"emotion":{"sadness":0.697,"neutral":99.154,"disgust":0.005,"anger":0.096,"surprise":0.005,"fear":0.005,"happiness":0.039},"beauty":{"female_score":63.322,"male_score":59.711},"gender":{"value":"Male"},"age":{"value":28},"eyestatus":{"left_eye_status":{"normal_glass_eye_open":0.021,"no_glass_eye_close":0.002,"occlusion":0.005,"no_glass_eye_open":99.972,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0.008,"no_glass_eye_close":0,"occlusion":0.001,"no_glass_eye_open":99.991,"normal_glass_eye_close":0,"dark_glasses":0}},"glass":{"value":"None"},"skinstatus":{"dark_circle":8.28,"stain":3.921,"acne":2.82,"health":26.959}}
+         * face_rectangle : {"width":328,"top":175,"left":19,"height":328}
+         * face_token : 98619f43b597a7a7b9d3e29f4aa2ea34
          */
 
         private AttributesBean attributes;
@@ -129,18 +101,22 @@ public class YanZhiBean {
 
         public static class AttributesBean {
             /**
-             * emotion : {"sadness":0.194,"neutral":99.798,"disgust":0,"anger":0.003,"surprise":0.001,"fear":0,"happiness":0.003}
+             * emotion : {"sadness":0.697,"neutral":99.154,"disgust":0.005,"anger":0.096,"surprise":0.005,"fear":0.005,"happiness":0.039}
+             * beauty : {"female_score":63.322,"male_score":59.711}
+             * gender : {"value":"Male"}
+             * age : {"value":28}
+             * eyestatus : {"left_eye_status":{"normal_glass_eye_open":0.021,"no_glass_eye_close":0.002,"occlusion":0.005,"no_glass_eye_open":99.972,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0.008,"no_glass_eye_close":0,"occlusion":0.001,"no_glass_eye_open":99.991,"normal_glass_eye_close":0,"dark_glasses":0}}
              * glass : {"value":"None"}
-             * skinstatus : {"dark_circle":6.892,"stain":58.851,"acne":20.03,"health":0.4}
-             * eyestatus : {"left_eye_status":{"normal_glass_eye_open":0.014,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.986,"normal_glass_eye_close":0,"dark_glasses":0},"right_eye_status":{"normal_glass_eye_open":0,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":100,"normal_glass_eye_close":0,"dark_glasses":0}}
-             * beauty : {"female_score":58.342,"male_score":59.1}
+             * skinstatus : {"dark_circle":8.28,"stain":3.921,"acne":2.82,"health":26.959}
              */
 
             private EmotionBean emotion;
+            private BeautyBean beauty;
+            private GenderBean gender;
+            private AgeBean age;
+            private EyestatusBean eyestatus;
             private GlassBean glass;
             private SkinstatusBean skinstatus;
-            private EyestatusBean eyestatus;
-            private BeautyBean beauty;
 
             public EmotionBean getEmotion() {
                 return emotion;
@@ -148,6 +124,38 @@ public class YanZhiBean {
 
             public void setEmotion(EmotionBean emotion) {
                 this.emotion = emotion;
+            }
+
+            public BeautyBean getBeauty() {
+                return beauty;
+            }
+
+            public void setBeauty(BeautyBean beauty) {
+                this.beauty = beauty;
+            }
+
+            public GenderBean getGender() {
+                return gender;
+            }
+
+            public void setGender(GenderBean gender) {
+                this.gender = gender;
+            }
+
+            public AgeBean getAge() {
+                return age;
+            }
+
+            public void setAge(AgeBean age) {
+                this.age = age;
+            }
+
+            public EyestatusBean getEyestatus() {
+                return eyestatus;
+            }
+
+            public void setEyestatus(EyestatusBean eyestatus) {
+                this.eyestatus = eyestatus;
             }
 
             public GlassBean getGlass() {
@@ -166,31 +174,15 @@ public class YanZhiBean {
                 this.skinstatus = skinstatus;
             }
 
-            public EyestatusBean getEyestatus() {
-                return eyestatus;
-            }
-
-            public void setEyestatus(EyestatusBean eyestatus) {
-                this.eyestatus = eyestatus;
-            }
-
-            public BeautyBean getBeauty() {
-                return beauty;
-            }
-
-            public void setBeauty(BeautyBean beauty) {
-                this.beauty = beauty;
-            }
-
             public static class EmotionBean {
                 /**
-                 * sadness : 0.194
-                 * neutral : 99.798
-                 * disgust : 0.0
-                 * anger : 0.003
-                 * surprise : 0.001
-                 * fear : 0.0
-                 * happiness : 0.003
+                 * sadness : 0.697
+                 * neutral : 99.154
+                 * disgust : 0.005
+                 * anger : 0.096
+                 * surprise : 0.005
+                 * fear : 0.005
+                 * happiness : 0.039
                  */
 
                 private double sadness;
@@ -258,9 +250,35 @@ public class YanZhiBean {
                 }
             }
 
-            public static class GlassBean {
+            public static class BeautyBean {
                 /**
-                 * value : None
+                 * female_score : 63.322
+                 * male_score : 59.711
+                 */
+
+                private double female_score;
+                private double male_score;
+
+                public double getFemale_score() {
+                    return female_score;
+                }
+
+                public void setFemale_score(double female_score) {
+                    this.female_score = female_score;
+                }
+
+                public double getMale_score() {
+                    return male_score;
+                }
+
+                public void setMale_score(double male_score) {
+                    this.male_score = male_score;
+                }
+            }
+
+            public static class GenderBean {
+                /**
+                 * value : Male
                  */
 
                 private String value;
@@ -274,56 +292,26 @@ public class YanZhiBean {
                 }
             }
 
-            public static class SkinstatusBean {
+            public static class AgeBean {
                 /**
-                 * dark_circle : 6.892
-                 * stain : 58.851
-                 * acne : 20.03
-                 * health : 0.4
+                 * value : 28
                  */
 
-                private double dark_circle;
-                private double stain;
-                private double acne;
-                private double health;
+                private int value;
 
-                public double getDark_circle() {
-                    return dark_circle;
+                public int getValue() {
+                    return value;
                 }
 
-                public void setDark_circle(double dark_circle) {
-                    this.dark_circle = dark_circle;
-                }
-
-                public double getStain() {
-                    return stain;
-                }
-
-                public void setStain(double stain) {
-                    this.stain = stain;
-                }
-
-                public double getAcne() {
-                    return acne;
-                }
-
-                public void setAcne(double acne) {
-                    this.acne = acne;
-                }
-
-                public double getHealth() {
-                    return health;
-                }
-
-                public void setHealth(double health) {
-                    this.health = health;
+                public void setValue(int value) {
+                    this.value = value;
                 }
             }
 
             public static class EyestatusBean {
                 /**
-                 * left_eye_status : {"normal_glass_eye_open":0.014,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":99.986,"normal_glass_eye_close":0,"dark_glasses":0}
-                 * right_eye_status : {"normal_glass_eye_open":0,"no_glass_eye_close":0,"occlusion":0,"no_glass_eye_open":100,"normal_glass_eye_close":0,"dark_glasses":0}
+                 * left_eye_status : {"normal_glass_eye_open":0.021,"no_glass_eye_close":0.002,"occlusion":0.005,"no_glass_eye_open":99.972,"normal_glass_eye_close":0,"dark_glasses":0}
+                 * right_eye_status : {"normal_glass_eye_open":0.008,"no_glass_eye_close":0,"occlusion":0.001,"no_glass_eye_open":99.991,"normal_glass_eye_close":0,"dark_glasses":0}
                  */
 
                 private LeftEyeStatusBean left_eye_status;
@@ -347,10 +335,10 @@ public class YanZhiBean {
 
                 public static class LeftEyeStatusBean {
                     /**
-                     * normal_glass_eye_open : 0.014
-                     * no_glass_eye_close : 0.0
-                     * occlusion : 0.0
-                     * no_glass_eye_open : 99.986
+                     * normal_glass_eye_open : 0.021
+                     * no_glass_eye_close : 0.002
+                     * occlusion : 0.005
+                     * no_glass_eye_open : 99.972
                      * normal_glass_eye_close : 0.0
                      * dark_glasses : 0.0
                      */
@@ -413,10 +401,10 @@ public class YanZhiBean {
 
                 public static class RightEyeStatusBean {
                     /**
-                     * normal_glass_eye_open : 0.0
+                     * normal_glass_eye_open : 0.008
                      * no_glass_eye_close : 0.0
-                     * occlusion : 0.0
-                     * no_glass_eye_open : 100.0
+                     * occlusion : 0.001
+                     * no_glass_eye_open : 99.991
                      * normal_glass_eye_close : 0.0
                      * dark_glasses : 0.0
                      */
@@ -478,39 +466,75 @@ public class YanZhiBean {
                 }
             }
 
-            public static class BeautyBean {
+            public static class GlassBean {
                 /**
-                 * female_score : 58.342
-                 * male_score : 59.1
+                 * value : None
                  */
 
-                private double female_score;
-                private double male_score;
+                private String value;
 
-                public double getFemale_score() {
-                    return female_score;
+                public String getValue() {
+                    return value;
                 }
 
-                public void setFemale_score(double female_score) {
-                    this.female_score = female_score;
+                public void setValue(String value) {
+                    this.value = value;
+                }
+            }
+
+            public static class SkinstatusBean {
+                /**
+                 * dark_circle : 8.28
+                 * stain : 3.921
+                 * acne : 2.82
+                 * health : 26.959
+                 */
+
+                private double dark_circle;
+                private double stain;
+                private double acne;
+                private double health;
+
+                public double getDark_circle() {
+                    return dark_circle;
                 }
 
-                public double getMale_score() {
-                    return male_score;
+                public void setDark_circle(double dark_circle) {
+                    this.dark_circle = dark_circle;
                 }
 
-                public void setMale_score(double male_score) {
-                    this.male_score = male_score;
+                public double getStain() {
+                    return stain;
+                }
+
+                public void setStain(double stain) {
+                    this.stain = stain;
+                }
+
+                public double getAcne() {
+                    return acne;
+                }
+
+                public void setAcne(double acne) {
+                    this.acne = acne;
+                }
+
+                public double getHealth() {
+                    return health;
+                }
+
+                public void setHealth(double health) {
+                    this.health = health;
                 }
             }
         }
 
         public static class FaceRectangleBean {
             /**
-             * width : 474
-             * top : 206
-             * left : 25
-             * height : 474
+             * width : 328
+             * top : 175
+             * left : 19
+             * height : 328
              */
 
             private int width;
