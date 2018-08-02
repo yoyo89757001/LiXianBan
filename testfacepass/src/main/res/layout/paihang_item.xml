@@ -28,6 +28,7 @@
         android:layout_marginLeft="10px"
         android:layout_toRightOf="@+id/touxiang"
         android:layout_height="wrap_content">
+
         <TextView
             android:textSize="14px"
             android:textColor="@color/write"
@@ -36,24 +37,25 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:textSize="12px"
-            android:layout_marginTop="4px"
+            android:textSize="18px"
             android:textColor="@color/write"
-            android:id="@+id/shijian"
+            android:id="@+id/yanzhi"
+            android:layout_marginTop="2px"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
-
 
     </LinearLayout>
 
     <TextView
-        android:textSize="18px"
-        android:textColor="@color/write"
-        android:id="@+id/yanzhi"
+        android:textSize="10px"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/ttt"
+        android:textColor="@color/write"
+        android:layout_marginLeft="4px"
+        android:id="@+id/shijian"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
 
 
 </RelativeLayout>
