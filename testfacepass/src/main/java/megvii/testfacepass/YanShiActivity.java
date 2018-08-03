@@ -389,9 +389,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             boolean livenessEnabled2 = true;
                             int faceMinThreshold2 = 60;
                             float blurThreshold2 = 0.6f;
-                            float lowBrightnessThreshold2 = 90f;
-                            float highBrightnessThreshold2 = 230f;
-                            float brightnessSTDThreshold2 = 80f;
+                            float lowBrightnessThreshold2 = 50f;
+                            float highBrightnessThreshold2 = 210f;
+                            float brightnessSTDThreshold2 = 90f;
                             FacePassConfig config1=new FacePassConfig(faceMinThreshold2,30f,30f,30f,blurThreshold2,
                                     lowBrightnessThreshold2,highBrightnessThreshold2,brightnessSTDThreshold2);
 
@@ -990,9 +990,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                     stream.close();
 
                                     int x1,y1,x2,y2=0;
-                                    x1= (int) (srect.left - 20);
-                                    y1= (int) (srect.top - 180);
-                                    x2= (int) ((srect.right+20)-(srect.left));
+                                    x1= (int) (srect.left - 34);
+                                    y1= (int) (srect.top - 140);
+                                    x2= (int) ((srect.right+34)-x1);
                                     y2= (int) ((srect.bottom+180)-(srect.top));
 
                                     Bitmap bitmap = Bitmap.createBitmap(bmp,x1<=0?0:x1,y1<=0?0:y1,(x1+x2)>=bmp.getWidth()?bmp.getWidth()-x1:x2,
