@@ -389,9 +389,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             boolean livenessEnabled2 = true;
                             int faceMinThreshold2 = 60;
                             float blurThreshold2 = 0.6f;
-                            float lowBrightnessThreshold2 = 60f;
-                            float highBrightnessThreshold2 = 200f;
-                            float brightnessSTDThreshold2 = 50f;
+                            float lowBrightnessThreshold2 = 90f;
+                            float highBrightnessThreshold2 = 230f;
+                            float brightnessSTDThreshold2 = 80f;
                             FacePassConfig config1=new FacePassConfig(faceMinThreshold2,30f,30f,30f,blurThreshold2,
                                     lowBrightnessThreshold2,highBrightnessThreshold2,brightnessSTDThreshold2);
 
