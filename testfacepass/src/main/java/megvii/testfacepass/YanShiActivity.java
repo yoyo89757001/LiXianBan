@@ -1,6 +1,7 @@
 package megvii.testfacepass;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -46,6 +47,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 
 import android.widget.FrameLayout;
@@ -94,7 +96,6 @@ import megvii.testfacepass.beans.Ceshi;
 import megvii.testfacepass.beans.CeshiDao;
 import megvii.testfacepass.beans.DIKu;
 import megvii.testfacepass.beans.DIKuDao;
-import megvii.testfacepass.beans.PaiHangBean;
 import megvii.testfacepass.beans.YanZhiBean;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
@@ -114,7 +115,7 @@ import okhttp3.Response;
 
 
 public class YanShiActivity extends Activity implements CameraManager.CameraListener {
-
+    private ValueAnimator animator;
     private static final String DEBUG_TAG = "FacePassDemo";
     private DIKuDao diKuDao=MyApplication.myApplication.getDaoSession().getDIKuDao();
     private static final int MSG_SHOW_TOAST = 1;
@@ -149,11 +150,8 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
     private String jiebang=null;
     /* SDK 实例对象 */
     FacePassHandler mFacePassHandler;
-
     /* 相机实例 */
     private CameraManager manager;
-
-
     /* 相机预览界面 */
     private CameraPreview cameraView;
 
@@ -181,17 +179,12 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
 
     private static final int cameraWidth = 1920;
     private static final int cameraHeight = 1080;
-
     private int mSecretNumber = 0;
     private static final long CLICK_INTERVAL = 600;
     private long mLastClickTime;
-
-
     private int heightPixels;
     private int widthPixels;
-
     int screenState = 0;// 0 横 1 竖
-
     private final int TIMEOUT=1000*10;
     FacePassModel trackModel;
     FacePassModel poseModel;
@@ -232,10 +225,10 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
 
     private Handler mAndroidHandler;
 
-    private  static ValueAnimator animator = ValueAnimator.ofFloat(1f, 10f);
+   // private  static ValueAnimator animator = ValueAnimator.ofFloat(1f, 10f);
     //排行榜
     private List<DIKu> paiHangLists=new ArrayList<>();
-
+    private static int gz=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -282,10 +275,41 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
         mFeedFrameThread = new FeedFrameThread();
         mFeedFrameThread.start();
 
-        animator.setDuration(1000L);
-        animator.setRepeatCount(-1);
-        animator.start();
+//        animator.setDuration(1000L);
+//        animator.setRepeatCount(-1);
+//        animator.start();
 
+        animator = ValueAnimator.ofFloat(0, 1f);
+        //动画时长，让进度条在CountDown时间内正好从0-360走完，
+        animator.setDuration(1000);
+        animator.setInterpolator(new LinearInterpolator());//匀速
+        animator.setRepeatCount(-1);//表示不循环，-1表示无限循环
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                Log.d("YanShiActivity", "eeeeeeeee");
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Log.d("YanShiActivity", "fffffffffffffffff");
+
+
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                gz=1;
+
+            }
+        });
+        animator.start();
 
     }
 
@@ -363,11 +387,11 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             float searchThreshold2 = 75f;
                             float livenessThreshold2 = 48f;
                             boolean livenessEnabled2 = true;
-                            int faceMinThreshold2 = 50;
-                            float blurThreshold2 = 0.4f;
-                            float lowBrightnessThreshold2 = 70f;
-                            float highBrightnessThreshold2 = 210f;
-                            float brightnessSTDThreshold2 = 60f;
+                            int faceMinThreshold2 = 60;
+                            float blurThreshold2 = 0.6f;
+                            float lowBrightnessThreshold2 = 60f;
+                            float highBrightnessThreshold2 = 200f;
+                            float brightnessSTDThreshold2 = 50f;
                             FacePassConfig config1=new FacePassConfig(faceMinThreshold2,30f,30f,30f,blurThreshold2,
                                     lowBrightnessThreshold2,highBrightnessThreshold2,brightnessSTDThreshold2);
 
@@ -590,7 +614,9 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                     if (lingshiTokenid != result.trackId) {
                                         lingshiTokenid = result.trackId;
                                         //不会重复
-                                        Bitmap bb = bitmapSparseArray.get(result.trackId);
+                                        final Bitmap bb = bitmapSparseArray.get(result.trackId);
+                                        Log.d("YanShiActivity", "获取图片的:" + result.trackId);
+
                                         if (bb != null) {
                                             FacePassAddFaceResult result33=null;
                                             try {
@@ -973,6 +999,7 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                                             (y1+y2)>=bmp.getHeight()?-y1:y2);
 
                                     bitmapSparseArray.put(face.trackId,bitmap);
+                                  //  Log.d("YanShiActivity", "插入图片:" + face.trackId);
                                     if (bitmapSparseArray.size()>14){
                                         Log.d("YanShiActivitytttttt", bitmapSparseArray.size()+"删除key" + bitmapSparseArray.keyAt(0));
                                         bitmapSparseArray.removeAt(0);
@@ -1054,7 +1081,12 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             }else {
                                 faceView.addPitch("平静");
                             }
-                            faceView.addTimes("10s");
+                            //时长
+                            diKu.setGuanzhu(diKu.getGuanzhu()+gz);
+                           // Log.d("YanShiActivity", "gz:" + gz);
+
+                            gz=0;
+                            faceView.addTimes(diKu.getGuanzhu()+"");
                             //排行
                             faceView.addRoll("你的排行是");
 
@@ -1063,11 +1095,11 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                             faceView.addAge("" );
                             faceView.addGenders("性别: 请正对屏幕" );
                             faceView.addBlur("" );
-                            faceView.addYaw("眼镜: 分析中...");
+                            faceView.addYaw("");
                             faceView.addPitch("");
                             faceView.addRoll("");
                             faceView.addBitmaps(null);
-                            faceView.addTimes("10s");
+                            faceView.addTimes("");
 
                         }
                     }else {
@@ -1075,13 +1107,13 @@ public class YanShiActivity extends Activity implements CameraManager.CameraList
                         faceView.addRect(drect);
                         faceView.addId("ID = " + face.trackId);
                         faceView.addAge("" );
-                        faceView.addGenders("性别: 请正对屏幕" );
+                        faceView.addGenders("" );
                         faceView.addBlur("" );
-                        faceView.addYaw("眼镜: 分析中...");
+                        faceView.addYaw("");
                         faceView.addPitch("");
                         faceView.addRoll("");
                         faceView.addBitmaps(null);
-                        faceView.addTimes("10s");
+                        faceView.addTimes("");
 
                     }
 
