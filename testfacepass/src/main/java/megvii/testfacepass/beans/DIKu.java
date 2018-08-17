@@ -1,50 +1,50 @@
 package megvii.testfacepass.beans;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.NotNull;
-import org.greenrobot.greendao.annotation.Generated;
+
+import java.util.Comparator;
+
+import io.objectbox.annotation.Entity;
+import io.objectbox.annotation.Id;
 
 /**
  * Created by Administrator on 2018/7/31.
  */
 
-@Entity
-public class DIKu {
-    @Id
-    @NotNull
+
+public class DIKu  {
+
     private Long id;
     private String teZhengMa;
     private double yanzhi;
     private String fuzhi;
-    private String time;
+    private float time;
     private long trackId;
     private int cishu;
     private int paihang;
     private int nianl;
     private String xingbie;
-    private int guanzhu;
+    private long guanzhu;
     private byte[] bytes;
     private String biaoqing;
-    @Generated(hash = 210380642)
-    public DIKu(@NotNull Long id, String teZhengMa, double yanzhi, String fuzhi,
-            String time, long trackId, int cishu, int paihang, int nianl,
-            String xingbie, int guanzhu, byte[] bytes, String biaoqing) {
-        this.id = id;
-        this.teZhengMa = teZhengMa;
-        this.yanzhi = yanzhi;
-        this.fuzhi = fuzhi;
-        this.time = time;
-        this.trackId = trackId;
-        this.cishu = cishu;
-        this.paihang = paihang;
-        this.nianl = nianl;
-        this.xingbie = xingbie;
-        this.guanzhu = guanzhu;
-        this.bytes = bytes;
-        this.biaoqing = biaoqing;
+    private float isYou;
+    private String lingshiTime;
+
+    public String getLingshiTime() {
+        return lingshiTime;
     }
-    @Generated(hash = 220588313)
+
+    public void setLingshiTime(String lingshiTime) {
+        this.lingshiTime = lingshiTime;
+    }
+
+    public float getIsYou() {
+        return isYou;
+    }
+
+    public void setIsYou(float isYou) {
+        this.isYou = isYou;
+    }
+
     public DIKu() {
     }
     public Long getId() {
@@ -71,10 +71,10 @@ public class DIKu {
     public void setFuzhi(String fuzhi) {
         this.fuzhi = fuzhi;
     }
-    public String getTime() {
+    public float getTime() {
         return this.time;
     }
-    public void setTime(String time) {
+    public void setTime(float time) {
         this.time = time;
     }
     public long getTrackId() {
@@ -107,10 +107,10 @@ public class DIKu {
     public void setXingbie(String xingbie) {
         this.xingbie = xingbie;
     }
-    public int getGuanzhu() {
+    public long getGuanzhu() {
         return this.guanzhu;
     }
-    public void setGuanzhu(int guanzhu) {
+    public void setGuanzhu(long guanzhu) {
         this.guanzhu = guanzhu;
     }
     public byte[] getBytes() {
@@ -126,6 +126,6 @@ public class DIKu {
         this.biaoqing = biaoqing;
     }
 
-    
+
 
 }

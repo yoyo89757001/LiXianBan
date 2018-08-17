@@ -1,51 +1,115 @@
 package megvii.testfacepass.beans;
 
+import android.support.annotation.NonNull;
+
 import java.util.Comparator;
+
+import io.objectbox.annotation.Entity;
+import io.objectbox.annotation.Id;
 
 /**
  * Created by Administrator on 2018/7/31.
  */
 
-public class PaiHangBean implements Comparator<PaiHangBean> {
-    private long id;
-    private String yanzhi;
+@Entity
+public class PaiHangBean {
+    @Id(assignable = true)
+    private Long id;
+    private String teZhengMa;
+    private double yanzhi;
+    private String fuzhi;
     private String time;
-    private String bianhao;
+    private long trackId;
+    private int cishu;
+    private int paihang;
+    private int nianl;
+    private String xingbie;
+    private long guanzhu;
+    private byte[] bytes;
+    private String biaoqing;
 
-    public long getId() {
-        return id;
+
+    public PaiHangBean() {
     }
-
-    public void setId(long id) {
+    public Long getId() {
+        return this.id;
+    }
+    public void setId(Long id) {
         this.id = id;
     }
-
-    public String getYanzhi() {
-        return yanzhi;
+    public String getTeZhengMa() {
+        return this.teZhengMa;
     }
-
-    public void setYanzhi(String yanzhi) {
+    public void setTeZhengMa(String teZhengMa) {
+        this.teZhengMa = teZhengMa;
+    }
+    public double getYanzhi() {
+        return this.yanzhi;
+    }
+    public void setYanzhi(double yanzhi) {
         this.yanzhi = yanzhi;
     }
-
-    public String getTime() {
-        return time;
+    public String getFuzhi() {
+        return this.fuzhi;
     }
-
+    public void setFuzhi(String fuzhi) {
+        this.fuzhi = fuzhi;
+    }
+    public String getTime() {
+        return this.time;
+    }
     public void setTime(String time) {
         this.time = time;
     }
-
-    public String getBianhao() {
-        return bianhao;
+    public long getTrackId() {
+        return this.trackId;
+    }
+    public void setTrackId(long trackId) {
+        this.trackId = trackId;
+    }
+    public int getCishu() {
+        return this.cishu;
+    }
+    public void setCishu(int cishu) {
+        this.cishu = cishu;
+    }
+    public int getPaihang() {
+        return this.paihang;
+    }
+    public void setPaihang(int paihang) {
+        this.paihang = paihang;
+    }
+    public int getNianl() {
+        return this.nianl;
+    }
+    public void setNianl(int nianl) {
+        this.nianl = nianl;
+    }
+    public String getXingbie() {
+        return this.xingbie;
+    }
+    public void setXingbie(String xingbie) {
+        this.xingbie = xingbie;
+    }
+    public long getGuanzhu() {
+        return this.guanzhu;
+    }
+    public void setGuanzhu(long guanzhu) {
+        this.guanzhu = guanzhu;
+    }
+    public byte[] getBytes() {
+        return this.bytes;
+    }
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
+    }
+    public String getBiaoqing() {
+        return this.biaoqing;
+    }
+    public void setBiaoqing(String biaoqing) {
+        this.biaoqing = biaoqing;
     }
 
-    public void setBianhao(String bianhao) {
-        this.bianhao = bianhao;
-    }
 
-    @Override
-    public int compare(PaiHangBean o1, PaiHangBean o2) {
-        return (o1.getYanzhi()).compareTo(o2.getYanzhi());
-    }
+
 }
